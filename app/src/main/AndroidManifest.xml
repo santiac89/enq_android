@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.santi.enq" >
+
+
+    <application>
+        <activity android:name="com.example.santi.enq.MainActivity" android:label="@string/title_activity_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" ></action>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name="com.example.santi.enq.EnqService" />
+
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
