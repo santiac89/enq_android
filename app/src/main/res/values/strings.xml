@@ -11,7 +11,15 @@
     <string name="action_example">Example action</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">EnQ</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_waiting">WaitingActivity</string>
+    <string name="wifioff_dialog_title">Wi-Fi Desactivado</string>
+    <string name="wifioff_dialog_content">Su conexion Wi-Fi se encuentra desactivada. Por favor, activela y conectese a la red del local.</string>
+    <string name="wifioff_dialog_settings">Configuracion</string>
+    <string name="wifioff_dialog_cancel">Cancelar</string>
+    <string name="noservicefound">No se ha podido conectar al servicio</string>
+    <string name="connecting">Conectando...</string>
+    <string name="refresh">Actualizar</string>
 </resources>

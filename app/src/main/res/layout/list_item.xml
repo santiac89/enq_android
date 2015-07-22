@@ -5,7 +5,7 @@
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/VqueueImage"
+        android:id="@+id/VgroupImage"
         android:layout_margin="8dp"
         android:longClickable="true" />
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/VqueueName"
+        android:id="@+id/VgroupName"
         android:layout_margin="15dp" />
 
     <TextView

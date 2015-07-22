@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.santi.enq" >
+    package="org.allin.enq" >
 
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application>
-        <activity android:name="com.example.santi.enq.MainActivity" android:label="@string/title_activity_main">
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" ></action>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="com.example.santi.enq.EnqService" />
 
+        <service android:name=".service.EnqService" />
+
+        <activity
+            android:name=".activity.WaitingActivity"
+            android:label="@string/title_activity_waiting" >
+        </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
