@@ -5,15 +5,15 @@ package org.allin.enq.model;
  */
 public class Group {
 
-    private Integer id;
     private String name;
+    private String _id;
 
-    public Integer getId() {
-        return id;
+    public String get_id() {
+        return _id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getName() {

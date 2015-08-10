@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/textView"
+        android:id="@+id/VestimatedTime"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/button"
         android:layout_alignEnd="@+id/button"
@@ -45,9 +45,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_alignStart="@+id/textView"
+        android:id="@+id/Vnumber"
         android:layout_marginTop="30dp" />
 </RelativeLayout>

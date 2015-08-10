@@ -30,7 +30,7 @@ import org.allin.enq.util.GroupListAdapter;
 
 
 import java.util.List;
-
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
@@ -149,6 +149,18 @@ public class MainActivity extends Activity {
         }
 
         @Override
+        public void OnClientEnqueued(Map<String, String> result) {
+
+            Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
+
+            intent.putExtra("number",result.get("number"));
+            intent.putExtra("estimated",result.get("estimated"));
+
+            startActivity(intent);
+
+        }
+
+        @Override
         public void OnServiceFound(final EnqRestApiInfo enqRestApiInfo) {
 
             runOnUiThread(new Runnable() {
@@ -183,9 +195,9 @@ public class MainActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-              Queue selectedQueue = (Queue) groupListView.getItemAtPosition(position);
+              Group selectedGroup= (Group) groupListView.getItemAtPosition(position);
 
-              mService.enqueueIn(selectedQueue);
+              mService.enqueueIn(selectedGroup);
 
         }
     }

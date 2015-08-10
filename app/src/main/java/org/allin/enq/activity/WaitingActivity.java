@@ -1,13 +1,16 @@
 package org.allin.enq.activity;
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import org.allin.enq.R;
 
 
-public class WaitingActivity extends ActionBarActivity {
+public class WaitingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,24 +19,16 @@ public class WaitingActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_waiting, menu);
-        return true;
-    }
+    protected void onStart() {
+        super.onStart();
+        Intent intnt = getIntent();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        TextView estimatedTimeView = (TextView) findViewById(R.id.VestimatedTime);
+        TextView numberView = (TextView) findViewById(R.id.Vnumber);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        estimatedTimeView.setText(getIntent().getStringExtra("estimated"));
+        numberView.setText(getIntent().getStringExtra("number"));
 
-        return super.onOptionsItemSelected(item);
+
     }
 }

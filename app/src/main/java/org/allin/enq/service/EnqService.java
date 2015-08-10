@@ -7,6 +7,7 @@ import android.content.res.AssetManager;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.text.format.Formatter;
 
 import com.google.gson.Gson;
 
@@ -21,7 +22,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import retrofit.RestAdapter;
@@ -88,8 +91,7 @@ public class EnqService extends Service {
 
                 try {
                     groups = enqRestApiClient.getGroups();
-                } catch (RetrofitError e)
-                {
+                } catch (RetrofitError e) {
                     return;
                 }
 
@@ -172,11 +174,25 @@ public class EnqService extends Service {
 
     }
 
-    public void enqueueIn(Queue selectedQueue) {
+    public void enqueueIn(final Group selectedGroup) {
 
+        new Thread() {
+            @Override
+            public void run() {
 
+                Map<String,String> clientData = new HashMap<String, String>();
+                clientData.put("hmac",wifiManager.getConnectionInfo().getMacAddress());
 
-    }
+                int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+                String ip = String.format("%d.%d.%d.%d", (ipAddress & 0xff),(ipAddress >> 8 & 0xff),(ipAddress >> 16 & 0xff),(ipAddress >> 24 & 0xff));
+                clientData.put("ip",ip);
+
+                Map<String,String> result = enqRestApiClient.enqueueIn(selectedGroup.get_id(),clientData);
+
+                listener.OnClientEnqueued(result);
+            }
+        }.start();
+}
 
 
     public class EnqServiceBinder extends Binder
