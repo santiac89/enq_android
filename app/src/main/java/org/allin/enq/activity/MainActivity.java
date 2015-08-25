@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -21,7 +22,6 @@ import android.widget.TextView;
 
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqService;
-import org.allin.enq.model.Queue;
 import org.allin.enq.service.EnqServiceListener;
 import org.allin.enq.service.EnqRestApiInfo;
 
@@ -32,6 +32,8 @@ import org.allin.enq.util.GroupListAdapter;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.RetrofitError;
+
 
 public class MainActivity extends Activity {
 
@@ -40,7 +42,7 @@ public class MainActivity extends Activity {
     TextView serviceStateView = null;
     EnqService mService = null;
     Boolean mBound = false;
-    WifiManager wifiManager;
+    WifiManager wifiManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class MainActivity extends Activity {
         groupListView = (ListView) findViewById(R.id.VgroupsList);
         refreshButtonView = (Button) findViewById(R.id.VrefreshButton);
         serviceStateView = (TextView) findViewById(R.id.VserviceState);
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -67,16 +70,10 @@ public class MainActivity extends Activity {
 
                 if (mBound) {
 
-                    if (!mService.isWifiEnabled()) {
-
-                        promptForWifiNetwork();
-
-                    } else {
-
+                        mService.checkForEnqServer();
                         refreshButtonView.setEnabled(false);
-                        mService.findQueues();
 
-                    }
+
                 }
 
             }
@@ -92,9 +89,16 @@ public class MainActivity extends Activity {
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             mService = binder.getService();
             mService.setListener(new MyServiceListener());
-            mService.checkForEnqService();
             mBound = true;
 
+            if (!wifiManager.isWifiEnabled()) {
+
+                promptForWifiNetwork();
+
+            } else {
+
+                mService.checkForEnqServer();
+            }
         }
 
         @Override
@@ -149,6 +153,11 @@ public class MainActivity extends Activity {
         }
 
         @Override
+        public void OnGroupsNotFound(Exception e) {
+            mService.findGroups();
+        }
+
+        @Override
         public void OnClientEnqueued(Map<String, String> result) {
 
             Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
@@ -161,7 +170,12 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void OnServiceFound(final EnqRestApiInfo enqRestApiInfo) {
+        public void OnServiceException(Exception e) {
+
+        }
+
+        @Override
+        public void OnServerFound(final EnqRestApiInfo enqRestApiInfo) {
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -172,21 +186,12 @@ public class MainActivity extends Activity {
                 }
             });
 
-            mService.findQueues();
+            mService.findGroups();
         }
 
         @Override
-        public void OnServiceNotFound() {
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    serviceStateView.setBackgroundColor(Color.RED);
-                }
-            });
-
-            mService.checkForEnqService();
-
+        public void OnServerNotFound(Exception e) {
+            mService.checkForEnqServer();
         }
     }
 

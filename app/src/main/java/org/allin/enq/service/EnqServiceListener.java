@@ -10,11 +10,15 @@ import java.util.Map;
  */
 public interface EnqServiceListener {
 
-    public void OnServiceFound(EnqRestApiInfo enqRestApiInfo);
+    void OnServerFound(EnqRestApiInfo enqRestApiInfo);
 
-    public void OnServiceNotFound();
+    void OnServerNotFound(Exception e);
 
-    public void OnGroupsFound(List<Group> groups);
+    void OnGroupsFound(List<Group> groups);
 
-    public void OnClientEnqueued(Map<String, String> result);
+    void OnGroupsNotFound(Exception e);
+
+    void OnClientEnqueued(Map<String, String> result);
+
+    void OnServiceException(Exception e);
 }
