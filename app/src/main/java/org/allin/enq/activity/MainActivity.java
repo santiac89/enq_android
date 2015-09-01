@@ -1,5 +1,6 @@
 package org.allin.enq.activity;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -7,9 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,7 +17,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqService;
@@ -32,14 +34,18 @@ import org.allin.enq.util.GroupListAdapter;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit.RetrofitError;
 
 
 public class MainActivity extends Activity {
 
-    ListView groupListView = null;
-    Button refreshButtonView = null;
-    TextView serviceStateView = null;
+    @Bind(R.id.VgroupsList) ListView groupListView;
+    @Bind(R.id.VrefreshButton) Button refreshButtonView;
+    @Bind(R.id.VserviceState) TextView serviceStateView;
+    @Bind(R.id.groupsProgressBar) ProgressBar groupsProgressBar;
+
     EnqService mService = null;
     Boolean mBound = false;
     WifiManager wifiManager = null;
@@ -50,12 +56,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        groupListView = (ListView) findViewById(R.id.VgroupsList);
-        refreshButtonView = (Button) findViewById(R.id.VrefreshButton);
-        serviceStateView = (TextView) findViewById(R.id.VserviceState);
+        ButterKnife.bind(this);
+
+
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         Intent intent = new Intent(this, EnqService.class);
+        startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
     }
@@ -69,11 +76,10 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
 
                 if (mBound) {
-
-                        mService.checkForEnqServer();
-                        refreshButtonView.setEnabled(false);
-
-
+                    groupListView.setVisibility(View.INVISIBLE);
+                    groupsProgressBar.setVisibility(View.VISIBLE);
+                    mService.checkForEnqServer();
+                    refreshButtonView.setEnabled(false);
                 }
 
             }
@@ -144,6 +150,8 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    groupListView.setVisibility(View.VISIBLE);
+                    groupsProgressBar.setVisibility(View.INVISIBLE);
                     refreshButtonView.setEnabled(true);
                     groupListView.setAdapter(new GroupListAdapter(groups, getApplicationContext()));
 
@@ -153,7 +161,7 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void OnGroupsNotFound(Exception e) {
+        public void OnGroupsNotFound(RetrofitError e) {
             mService.findGroups();
         }
 
@@ -170,6 +178,17 @@ public class MainActivity extends Activity {
         }
 
         @Override
+        public void OnClientNotEnqueued(RetrofitError e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Lo sentimos, no se pudo asignar al grupo. Intentelo de nuevo", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+
+        @Override
         public void OnServiceException(Exception e) {
 
         }
@@ -181,7 +200,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void run() {
                     refreshButtonView.setEnabled(true);
-                    serviceStateView.setBackgroundColor(Color.GREEN);
+                    serviceStateView.setBackgroundColor(getResources().getColor(R.color.quiet_green));
                     serviceStateView.setText(enqRestApiInfo.getName());
                 }
             });
@@ -200,7 +219,7 @@ public class MainActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-              Group selectedGroup= (Group) groupListView.getItemAtPosition(position);
+              Group selectedGroup = (Group) groupListView.getItemAtPosition(position);
 
               mService.enqueueIn(selectedGroup);
 
