@@ -3,6 +3,7 @@ package org.allin.enq.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -21,6 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.gson.internal.LinkedTreeMap;
 
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqService;
@@ -186,6 +190,22 @@ public class MainActivity extends Activity {
                 }
             });
 
+        }
+
+        @Override
+        public void OnServerCall(LinkedTreeMap map) {
+
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(getBaseContext())
+                            .setSmallIcon(R.drawable.abc_btn_radio_material)
+                            .setContentTitle("EnQ")
+                            .setContentText("Ya puede acercarse a la caja numero " + map.get("paydesk"));
+            int mNotificationId = 001;
+// Gets an instance of the NotificationManager service
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
         }
 
         @Override

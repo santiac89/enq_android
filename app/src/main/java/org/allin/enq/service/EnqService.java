@@ -13,15 +13,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 
 
 import org.allin.enq.model.Group;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
@@ -161,22 +167,19 @@ public class EnqService extends Service {
                 try {
                     serverSocket = new ServerSocket(3131);
                     socket = serverSocket.accept();
-                    response = getStringFromInputStream(socket.getInputStream());
+                    InputStream in = socket.getInputStream();
+                    byte[] buffer = new byte[in.available()];
+                    in.read(buffer);
+
+                    response = new String(buffer);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 LinkedTreeMap map = gson.fromJson(response, LinkedTreeMap.class);
+                
+                listener.OnServerCall(map);
 
-                NotificationCompat.Builder mBuilder =
-                        new NotificationCompat.Builder(getApplicationContext())
-                                .setContentTitle("My notification")
-                                .setContentText("Hello World!");
-// Creates an explicit
-                NotificationManager mNotificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-                mNotificationManager.notify(1234, mBuilder.build());
 
 
 

@@ -1,5 +1,7 @@
 package org.allin.enq.service;
 
+import com.google.gson.internal.LinkedTreeMap;
+
 import org.allin.enq.model.Group;
 
 import java.util.List;
@@ -26,4 +28,6 @@ public interface EnqServiceListener {
     void OnServiceException(Exception e);
 
     void OnClientNotEnqueued(RetrofitError e);
+
+    void OnServerCall(LinkedTreeMap map);
 }
