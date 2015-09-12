@@ -25,8 +25,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -167,22 +169,18 @@ public class EnqService extends Service {
                 try {
                     serverSocket = new ServerSocket(3131);
                     socket = serverSocket.accept();
-                    InputStream in = socket.getInputStream();
-                    byte[] buffer = new byte[in.available()];
-                    in.read(buffer);
 
-                    response = new String(buffer);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                    while (response == null)
+                        response = reader.readLine();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 LinkedTreeMap map = gson.fromJson(response, LinkedTreeMap.class);
-                
+
                 listener.OnServerCall(map);
-
-
-
-
             }
         }.start();
     }

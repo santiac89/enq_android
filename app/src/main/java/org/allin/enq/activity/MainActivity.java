@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -43,7 +45,7 @@ import butterknife.ButterKnife;
 import retrofit.RetrofitError;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     @Bind(R.id.VgroupsList) ListView groupListView;
     @Bind(R.id.VrefreshButton) Button refreshButtonView;
@@ -60,8 +62,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setIcon(R.drawable.icon_bw);
+        actionBar.setDisplayShowHomeEnabled(true);
 
+        ButterKnife.bind(this);
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -197,14 +202,12 @@ public class MainActivity extends Activity {
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(getBaseContext())
-                            .setSmallIcon(R.drawable.abc_btn_radio_material)
+                            .setSmallIcon(R.drawable.icon_bw)
                             .setContentTitle("EnQ")
                             .setContentText("Ya puede acercarse a la caja numero " + map.get("paydesk"));
             int mNotificationId = 001;
-// Gets an instance of the NotificationManager service
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-// Builds the notification and issues it.
+
+            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
         }
 

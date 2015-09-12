@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
-    <application>
+    <application android:theme="@style/EnQTheme" android:icon="@drawable/icon">
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main" >

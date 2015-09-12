@@ -1,7 +1,21 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- the theme applied to the application or activity -->
+    <style name="EnQTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/EnQActionBar</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/EnQActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="EnQActionBar"
+         parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/quiet_green</item>
+        <!-- Support library compatibility -->
+        <item name="background">@color/quiet_green</item>
+
 
     </style>
 
