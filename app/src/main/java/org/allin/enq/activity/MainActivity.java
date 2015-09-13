@@ -26,31 +26,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
-import com.google.gson.internal.LinkedTreeMap;
-=======
-
 import com.google.gson.JsonObject;
->>>>>>> 3266b19f1341a85ba6d0d9f12d5b7c23117098f9
 
 import org.allin.enq.R;
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqRestApiInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.service.EnqServiceListener;
-<<<<<<< HEAD
-import org.allin.enq.util.GroupListAdapter;
-
-=======
-import org.allin.enq.service.EnqRestApiInfo;
-
-import org.allin.enq.R;
 import org.allin.enq.service.NotificationButtonsReceiver;
 import org.allin.enq.util.GroupListAdapter;
 
-
 import java.io.BufferedWriter;
->>>>>>> 3266b19f1341a85ba6d0d9f12d5b7c23117098f9
 import java.util.List;
 import java.util.Map;
 

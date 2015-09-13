@@ -23,4 +23,5 @@
     <string name="connecting">Conectando...</string>
     <string name="refresh">Actualizar</string>
     <string name="selecc_tipo_atencion">Seleccione el tipo de atención</string>
+    <string name="modificacion_branch">Prueba de que aparezca en el branch</string>
 </resources>
