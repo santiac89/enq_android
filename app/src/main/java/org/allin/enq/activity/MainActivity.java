@@ -1,7 +1,6 @@
 package org.allin.enq.activity;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.ComponentName;
@@ -9,14 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
-import android.os.IBinder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
-
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -25,17 +24,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.gson.internal.LinkedTreeMap;
 
+import org.allin.enq.R;
 import org.allin.enq.model.Group;
+import org.allin.enq.service.EnqRestApiInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.service.EnqServiceListener;
-import org.allin.enq.service.EnqRestApiInfo;
-
-import org.allin.enq.R;
 import org.allin.enq.util.GroupListAdapter;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +48,8 @@ public class MainActivity extends ActionBarActivity {
     @Bind(R.id.VserviceState) TextView serviceStateView;
     @Bind(R.id.groupsProgressBar) ProgressBar groupsProgressBar;
 
+    TextView conectando;
+    TextView enq_title;
     EnqService mService = null;
     Boolean mBound = false;
     WifiManager wifiManager = null;
@@ -62,9 +60,20 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setIcon(R.drawable.icon_bw);
-        actionBar.setDisplayShowHomeEnabled(true);
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setIcon(R.drawable.icon_bw);
+        //actionBar.setDisplayShowHomeEnabled(true);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
+        setSupportActionBar(toolbar);
+
+        //custom fonts
+        Typeface comfortaa_b = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Bold.ttf");
+        Typeface comfortaa_r = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Regular.ttf");
+        conectando= (TextView) findViewById(R.id.VserviceState);
+        conectando.setTypeface(comfortaa_r);
+        enq_title= (TextView) findViewById(R.id.title_enq);
+        enq_title.setTypeface(comfortaa_b);
 
         ButterKnife.bind(this);
 
