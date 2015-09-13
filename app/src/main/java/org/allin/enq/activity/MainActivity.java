@@ -1,13 +1,14 @@
 package org.allin.enq.activity;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -26,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.JsonObject;
 
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqService;
@@ -34,9 +35,11 @@ import org.allin.enq.service.EnqServiceListener;
 import org.allin.enq.service.EnqRestApiInfo;
 
 import org.allin.enq.R;
+import org.allin.enq.service.NotificationButtonsReceiver;
 import org.allin.enq.util.GroupListAdapter;
 
 
+import java.io.BufferedWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -198,17 +201,43 @@ public class MainActivity extends ActionBarActivity {
         }
 
         @Override
-        public void OnServerCall(LinkedTreeMap map) {
+        public void OnServerCall(JsonObject obj, BufferedWriter socketWriter) {
+
+            getApplicationContext().registerReceiver(new NotificationButtonsReceiver(socketWriter), new IntentFilter(EnqService.NOTIFICATION_ACTION));
+
+            Integer paydeskNumber = obj.get("paydesk").getAsInt();
+            Integer callTimeout = obj.get("call_timeout").getAsInt();
+
+            Intent confirmIntent = new Intent(EnqService.NOTIFICATION_ACTION);
+            confirmIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.CONFIRM);
+
+            Intent extendIntent = new Intent(EnqService.NOTIFICATION_ACTION);
+            extendIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.EXTEND);
+
+            Intent cancelIntent = new Intent(EnqService.NOTIFICATION_ACTION);
+            cancelIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.CANCEL);
+
+            PendingIntent confirmPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent extendPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,extendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(getBaseContext())
-                            .setSmallIcon(R.drawable.icon_bw)
-                            .setContentTitle("EnQ")
-                            .setContentText("Ya puede acercarse a la caja numero " + map.get("paydesk"));
-            int mNotificationId = 001;
+                new NotificationCompat.Builder(getBaseContext())
+                    .setSmallIcon(R.drawable.icon_bw)
+                    .setContentTitle("EnQ")
+                    .setContentText("Ya puede acercarse a la caja número " + paydeskNumber.toString() )
+                    .addAction(
+                        new NotificationCompat.Action(R.drawable.ic_done_black_24dp, "Confirmar", confirmPendingIntent)
+                    )
+                    .addAction(
+                        new NotificationCompat.Action(R.drawable.ic_alarm_add_black_24dp, "Extender", extendPendingIntent)
+                    )
+                    .addAction(
+                        new NotificationCompat.Action(R.drawable.ic_clear_black_24dp, "Cancelar", cancelPendingIntent)
+                    );
 
             NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+            mNotifyMgr.notify(R.integer.notification_id, mBuilder.build());
         }
 
         @Override

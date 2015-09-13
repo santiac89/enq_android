@@ -1,9 +1,12 @@
 package org.allin.enq.service;
 
+import android.app.Application;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -13,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
@@ -26,10 +30,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
+import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
@@ -49,6 +55,13 @@ import retrofit.RetrofitError;
  */
 public class EnqService extends Service {
 
+    public static final int REQUEST_CODE = 138;
+    public static final String NOTIFICATION_ACTION = "org.allin.enq.NOTIFICATION_ACTION";
+    public static final String NOTIFICATION_ACTION_EXTRA = "notification_action";
+    public static final String CONFIRM = "confirm";
+    public static final String EXTEND = "extend";
+    public static final String CANCEL = "cancel";
+
     // Binder given to clients
     private final IBinder mBinder = new EnqServiceBinder();
     private WifiManager wifiManager;
@@ -57,6 +70,10 @@ public class EnqService extends Service {
     private Properties properties;
     private Gson gson = new Gson();
     private EnqRestApiClient enqRestApiClient;
+
+    private Socket socket = null;
+    private BufferedReader socketReader = null;
+    private BufferedWriter socketWriter = null;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -126,9 +143,6 @@ public class EnqService extends Service {
     }
 
     public void enqueueIn(final Group selectedGroup) {
-
-
-
         new AsyncTask<Group,Void,Void>() {
 
             @Override
@@ -153,16 +167,14 @@ public class EnqService extends Service {
 
             }
         }.execute(selectedGroup);
-
-
     }
 
     public void waitForServerCall() {
+
         new Thread() {
             @Override
             public void run() {
                 ServerSocket serverSocket = null;
-                Socket socket = null;
                 String response = null;
 
 
@@ -170,17 +182,18 @@ public class EnqService extends Service {
                     serverSocket = new ServerSocket(3131);
                     socket = serverSocket.accept();
 
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
                     while (response == null)
-                        response = reader.readLine();
+                        response = socketReader.readLine();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                LinkedTreeMap map = gson.fromJson(response, LinkedTreeMap.class);
+                JsonObject obj = gson.fromJson(response, JsonObject.class);
 
-                listener.OnServerCall(map);
+                listener.OnServerCall(obj, socketWriter);
             }
         }.start();
     }
@@ -212,12 +225,6 @@ public class EnqService extends Service {
         }
 
         return packet;
-    }
-
-    private String getStringFromInputStream(InputStream in) throws IOException {
-        byte[] buffer = new byte[in.available()];
-        in.read(buffer);
-        return new String(buffer);
     }
 
     private String getDeviceIpAddress() {
@@ -256,4 +263,6 @@ public class EnqService extends Service {
             super(throwable);
         }
     }
+
+
 }
