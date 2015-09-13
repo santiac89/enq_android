@@ -209,17 +209,17 @@ public class MainActivity extends ActionBarActivity {
             Integer callTimeout = obj.get("call_timeout").getAsInt();
 
             Intent confirmIntent = new Intent(EnqService.NOTIFICATION_ACTION);
-            confirmIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.CONFIRM);
+            confirmIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA, EnqService.CONFIRM);
 
             Intent extendIntent = new Intent(EnqService.NOTIFICATION_ACTION);
-            extendIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.EXTEND);
+            extendIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA, EnqService.EXTEND);
 
             Intent cancelIntent = new Intent(EnqService.NOTIFICATION_ACTION);
-            cancelIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.CANCEL);
+            cancelIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA, EnqService.CANCEL);
 
-            PendingIntent confirmPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent extendPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,extendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent confirmPendingIntent = PendingIntent.getBroadcast(getBaseContext(),1,confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent extendPendingIntent = PendingIntent.getBroadcast(getBaseContext(),2,extendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(getBaseContext(),3,cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getBaseContext())
@@ -231,10 +231,10 @@ public class MainActivity extends ActionBarActivity {
                     )
                     .addAction(
                         new NotificationCompat.Action(R.drawable.ic_alarm_add_black_24dp, "Extender", extendPendingIntent)
-                    )
-                    .addAction(
-                        new NotificationCompat.Action(R.drawable.ic_clear_black_24dp, "Cancelar", cancelPendingIntent)
                     );
+//                    .addAction(
+//                        new NotificationCompat.Action(R.drawable.ic_clear_black_24dp, "Cancelar", cancelPendingIntent)
+//                    );
 
             NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mNotifyMgr.notify(R.integer.notification_id, mBuilder.build());
