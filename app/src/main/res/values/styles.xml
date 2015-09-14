@@ -6,9 +6,9 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
     </style>
 
-    <style name="AppNameToolbar" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <!--<style name="AppNameToolbar" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">-->
 
-    </style>
+    <!--</style>-->
 
 
 </resources>

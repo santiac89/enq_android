@@ -2,15 +2,18 @@ package org.allin.enq.util;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import org.allin.enq.model.Group;
 import org.allin.enq.R;
+import org.allin.enq.service.EnqService;
 
 import java.util.List;
 
@@ -20,12 +23,15 @@ import java.util.List;
 public class GroupListAdapter implements ListAdapter
 {
     private Context appContext;
-
     private List<Group> groupsList;
+    private EnqService service;
+    private Typeface comfortaa_regular;
 
-    public GroupListAdapter(List<Group> groupsList, Context appContext) {
+    public GroupListAdapter(EnqService service, List<Group> groupsList, Context appContext) {
+        comfortaa_regular = Typeface.createFromAsset(appContext.getAssets(), "fonts/Comfortaa-Regular.ttf");
         this.groupsList = groupsList;
         this.appContext = appContext;
+        this.service = service;
     }
 
     @Override
@@ -76,14 +82,20 @@ public class GroupListAdapter implements ListAdapter
             convertView = inflater.inflate(R.layout.list_item, parent, false);
         }
 
-        TextView groupName = (TextView) convertView .findViewById(R.id.VgroupName);
-        ImageView queueImage = (ImageView) convertView .findViewById(R.id.VgroupImage);
+        Button groupButton = (Button) convertView .findViewById(R.id.group_button);
+        //ImageView queueImage = (ImageView) convertView .findViewById(R.id.VgroupImage);
         TextView estimatedTime = (TextView) convertView .findViewById(R.id.VestimatedTime);
 
-        Group currentGroup = groupsList.get(position);
+        final Group currentGroup = groupsList.get(position);
 
-        groupName.setText(currentGroup.getName());
-
+        groupButton.setTypeface(comfortaa_regular);
+        groupButton.setText(currentGroup.getName());
+        groupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                service.enqueueIn(currentGroup);
+            }
+        });
 
         return convertView ;
 

@@ -7,10 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
-    <application android:theme="@style/EnQTheme" android:icon="@drawable/icon">
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/title_activity_main" >
+    <application android:theme="@style/EnQTheme" android:icon="@drawable/icon" android:label="EnQ">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -20,8 +18,7 @@
         <service android:name=".service.EnqService" />
 
         <activity
-            android:name=".activity.WaitingActivity"
-            android:label="@string/title_activity_waiting" >
+            android:name=".activity.WaitingActivity" >
         </activity>
 
     </application>

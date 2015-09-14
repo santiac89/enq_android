@@ -13,11 +13,15 @@ import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -25,49 +29,29 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-<<<<<<< HEAD
-import com.google.gson.internal.LinkedTreeMap;
-=======
-
 import com.google.gson.JsonObject;
->>>>>>> 3266b19f1341a85ba6d0d9f12d5b7c23117098f9
-
 import org.allin.enq.R;
 import org.allin.enq.model.Group;
 import org.allin.enq.service.EnqRestApiInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.service.EnqServiceListener;
-<<<<<<< HEAD
-import org.allin.enq.util.GroupListAdapter;
-
-=======
-import org.allin.enq.service.EnqRestApiInfo;
-
-import org.allin.enq.R;
 import org.allin.enq.service.NotificationButtonsReceiver;
 import org.allin.enq.util.GroupListAdapter;
-
-
 import java.io.BufferedWriter;
->>>>>>> 3266b19f1341a85ba6d0d9f12d5b7c23117098f9
 import java.util.List;
 import java.util.Map;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.RetrofitError;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends EnqActivity {
 
-    @Bind(R.id.VgroupsList) ListView groupListView;
-    @Bind(R.id.VrefreshButton) Button refreshButtonView;
-    @Bind(R.id.VserviceState) TextView serviceStateView;
-    @Bind(R.id.groupsProgressBar) ProgressBar groupsProgressBar;
+    @Bind(R.id.groups_list_view) ListView groupListView;
+    @Bind(R.id.refresh_button) Button refreshButton;
+    @Bind(R.id.service_state_text_view) TextView serviceStateTextView;
+    @Bind(R.id.groups_loading_progress_bar) ProgressBar groupsLoadingProgressBar;
 
-    TextView conectando;
-    TextView enq_title;
     EnqService mService = null;
     Boolean mBound = false;
     WifiManager wifiManager = null;
@@ -78,23 +62,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //ActionBar actionBar = getSupportActionBar();
-        //actionBar.setIcon(R.drawable.icon_bw);
-        //actionBar.setDisplayShowHomeEnabled(true);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
-        setSupportActionBar(toolbar);
-
-        //custom fonts
-        Typeface comfortaa_b = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Bold.ttf");
-        Typeface comfortaa_r = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Regular.ttf");
-        conectando= (TextView) findViewById(R.id.VserviceState);
-        conectando.setTypeface(comfortaa_r);
-        enq_title= (TextView) findViewById(R.id.title_enq);
-        enq_title.setTypeface(comfortaa_b);
-
         ButterKnife.bind(this);
 
+        setupActionBar(R.id.main_activity_toolbar, "EnQ");
+
+        serviceStateTextView.setTypeface(comfortaa_regular);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         Intent intent = new Intent(this, EnqService.class);
@@ -106,16 +78,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        groupListView.setOnItemClickListener(new QueueSelectedListener());
-        refreshButtonView.setOnClickListener(new View.OnClickListener() {
+        refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mBound) {
                     groupListView.setVisibility(View.INVISIBLE);
-                    groupsProgressBar.setVisibility(View.VISIBLE);
+                    groupsLoadingProgressBar.setVisibility(View.VISIBLE);
                     mService.checkForEnqServer();
-                    refreshButtonView.setEnabled(false);
+                    refreshButton.setEnabled(false);
                 }
 
             }
@@ -125,8 +96,7 @@ public class MainActivity extends ActionBarActivity {
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
 
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             mService = binder.getService();
@@ -187,9 +157,9 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void run() {
                     groupListView.setVisibility(View.VISIBLE);
-                    groupsProgressBar.setVisibility(View.INVISIBLE);
-                    refreshButtonView.setEnabled(true);
-                    groupListView.setAdapter(new GroupListAdapter(groups, getApplicationContext()));
+                    groupsLoadingProgressBar.setVisibility(View.INVISIBLE);
+                    refreshButton.setEnabled(true);
+                    groupListView.setAdapter(new GroupListAdapter(mService,groups, getApplicationContext()));
 
                 }
             });
@@ -241,9 +211,12 @@ public class MainActivity extends ActionBarActivity {
             Intent cancelIntent = new Intent(EnqService.NOTIFICATION_ACTION);
             cancelIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.CANCEL);
 
-            PendingIntent confirmPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent extendPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,extendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(getBaseContext(),EnqService.REQUEST_CODE,cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            final Intent timeoutIntent = new Intent(EnqService.NOTIFICATION_ACTION);
+            extendIntent.putExtra(EnqService.NOTIFICATION_ACTION_EXTRA,EnqService.TIMEOUT);
+
+            PendingIntent confirmPendingIntent = PendingIntent.getBroadcast(getBaseContext(), 1, confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent extendPendingIntent = PendingIntent.getBroadcast(getBaseContext(), 2, extendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(getBaseContext(), 3, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getBaseContext())
@@ -260,8 +233,18 @@ public class MainActivity extends ActionBarActivity {
                         new NotificationCompat.Action(R.drawable.ic_clear_black_24dp, "Cancelar", cancelPendingIntent)
                     );
 
-            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            final NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mNotifyMgr.notify(R.integer.notification_id, mBuilder.build());
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mNotifyMgr.cancel(R.integer.notification_id);
+                    sendBroadcast(timeoutIntent);
+                }
+            }, callTimeout);
+
+
         }
 
         @Override
@@ -275,9 +258,9 @@ public class MainActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    refreshButtonView.setEnabled(true);
-                    serviceStateView.setBackgroundColor(getResources().getColor(R.color.quiet_green));
-                    serviceStateView.setText(enqRestApiInfo.getName());
+                    refreshButton.setEnabled(true);
+                    serviceStateTextView.setBackgroundColor(getResources().getColor(R.color.quiet_green));
+                    serviceStateTextView.setText(enqRestApiInfo.getName());
                 }
             });
 
@@ -290,16 +273,16 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public class QueueSelectedListener implements AdapterView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-              Group selectedGroup = (Group) groupListView.getItemAtPosition(position);
-
-              mService.enqueueIn(selectedGroup);
-
-        }
-    }
+//    public class QueueSelectedListener implements AdapterView.OnItemClickListener {
+//
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//              Group selectedGroup = (Group) groupListView.getItemAtPosition(position);
+//
+//              mService.enqueueIn(selectedGroup);
+//
+//        }
+//    }
 
 }

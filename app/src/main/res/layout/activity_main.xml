@@ -2,62 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ActivityMain"
-    android:padding="0dp">
+    android:padding="0dp"
+    >
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:id="@+id/appbar"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:focusableInTouchMode="true">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:orientation="vertical"
-            android:paddingBottom="16dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/logo_verde"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:src="@drawable/icon_bw"/>
-
-            <TextView android:id="@+id/title_enq"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/title_activity_main"
-                android:textSize="30sp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/logo_verde"
-                android:layout_marginLeft="1dp" />
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.Toolbar>
+    <include layout="@layout/toolbar" android:id="@+id/main_activity_toolbar" />
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/VgroupsList"
+        android:id="@+id/groups_list_view"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/VrefreshButton"
-        android:layout_below="@+id/VserviceState"
+        android:layout_above="@+id/refresh_button"
+        android:layout_below="@+id/service_state_text_view"
         android:visibility="invisible" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/refresh"
-        android:id="@+id/VrefreshButton"
+        android:id="@+id/refresh_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -71,8 +35,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/connecting"
-        android:id="@+id/VserviceState"
-        android:layout_below="@id/appbar"
+        android:id="@+id/service_state_text_view"
+        android:layout_below="@id/main_activity_toolbar"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginLeft="5dp"
@@ -84,7 +48,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/groupsProgressBar"
+        android:id="@+id/groups_loading_progress_bar"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:indeterminate="true"

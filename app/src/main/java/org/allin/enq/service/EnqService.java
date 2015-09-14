@@ -61,6 +61,7 @@ public class EnqService extends Service {
     public static final String CONFIRM = "confirm";
     public static final String EXTEND = "extend";
     public static final String CANCEL = "cancel";
+    public static final String TIMEOUT = "client_timeout";
 
     // Binder given to clients
     private final IBinder mBinder = new EnqServiceBinder();

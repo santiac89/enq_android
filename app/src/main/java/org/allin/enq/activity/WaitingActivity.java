@@ -19,7 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class WaitingActivity extends Activity {
+public class WaitingActivity extends EnqActivity {
 
     EnqService mService = null;
 
@@ -35,6 +35,8 @@ public class WaitingActivity extends Activity {
         setContentView(R.layout.activity_waiting);
 
         ButterKnife.bind(this);
+
+        setupActionBar(R.id.waiting_activity_toolbar, "EnQ");
 
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
