@@ -56,12 +56,6 @@ import retrofit.RetrofitError;
 public class EnqService extends Service {
 
     public static final int REQUEST_CODE = 138;
-    public static final String NOTIFICATION_ACTION = "org.allin.enq.NOTIFICATION_ACTION";
-    public static final String NOTIFICATION_ACTION_EXTRA = "notification_action";
-    public static final String CONFIRM = "confirm";
-    public static final String EXTEND = "extend";
-    public static final String CANCEL = "cancel";
-    public static final String TIMEOUT = "client_timeout";
 
     // Binder given to clients
     private final IBinder mBinder = new EnqServiceBinder();
@@ -72,9 +66,9 @@ public class EnqService extends Service {
     private Gson gson = new Gson();
     private EnqRestApiClient enqRestApiClient;
 
-    private Socket socket = null;
-    private BufferedReader socketReader = null;
+    private ServerSocket serverSocket = null;
     private BufferedWriter socketWriter = null;
+    private Boolean isWaitingForServerCall = false;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -171,32 +165,45 @@ public class EnqService extends Service {
     }
 
     public void waitForServerCall() {
-
         new Thread() {
             @Override
             public void run() {
-                ServerSocket serverSocket = null;
                 String response = null;
 
-
                 try {
-                    serverSocket = new ServerSocket(3131);
-                    socket = serverSocket.accept();
 
-                    socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    if (serverSocket != null) {
+                        serverSocket.close();
+                    }
+
+                    serverSocket = new ServerSocket(3131);
+                    isWaitingForServerCall = true;
+                    Socket socket = serverSocket.accept();
+                    isWaitingForServerCall = false;
+                    BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                    while (response == null)
-                        response = socketReader.readLine();
+                    while (response == null) response = socketReader.readLine();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 JsonObject obj = gson.fromJson(response, JsonObject.class);
 
-                listener.OnServerCall(obj, socketWriter);
+                listener.OnServerCall(obj);
             }
         }.start();
+    }
+
+    public void sendResponse(String response) {
+        try {
+            socketWriter.write(response);
+            serverSocket.close();
+            socketWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable
@@ -226,6 +233,14 @@ public class EnqService extends Service {
         }
 
         return packet;
+    }
+
+    public Boolean isWaitingForServerCall() {
+        return isWaitingForServerCall;
+    }
+
+    public Integer getReenqueueLimit() {
+        return enqRestApiInfo.getReenqueueLimit();
     }
 
     private String getDeviceIpAddress() {

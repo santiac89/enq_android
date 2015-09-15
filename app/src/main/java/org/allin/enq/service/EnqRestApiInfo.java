@@ -13,6 +13,7 @@ public class EnqRestApiInfo {
     private String name;
     private String address;
     private Integer port;
+    private Integer reenqueue_limit;
 
     public void fillFromByteArray(byte[] data)
     {
@@ -22,6 +23,7 @@ public class EnqRestApiInfo {
         address = parts[0];
         port = Integer.valueOf(parts[1]);
         name = parts[2];
+        reenqueue_limit = Integer.valueOf(parts[1]);
 
     }
 
@@ -36,4 +38,6 @@ public class EnqRestApiInfo {
     public Integer getPort() {
         return port;
     }
+
+    public Integer getReenqueueLimit() { return reenqueue_limit; }
 }

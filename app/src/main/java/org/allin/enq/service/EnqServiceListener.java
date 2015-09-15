@@ -6,6 +6,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import org.allin.enq.model.Group;
 
 import java.io.BufferedWriter;
+import java.net.ServerSocket;
 import java.util.List;
 import java.util.Map;
 
@@ -31,5 +32,5 @@ public interface EnqServiceListener {
 
     void OnClientNotEnqueued(RetrofitError e);
 
-    void OnServerCall(JsonObject map, BufferedWriter socketWriter);
+    void OnServerCall(JsonObject map);
 }

@@ -1,14 +1,10 @@
 package org.allin.enq.activity;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -23,11 +19,11 @@ public class WaitingActivity extends EnqActivity {
 
     EnqService mService = null;
 
-    @Bind(R.id.estimatedTimeTextView) TextView estimatedTimeTextView;
-    @Bind(R.id.numberTextView) TextView numberTextView;
-    @Bind(R.id.cancelButton) Button cancelButton;
-    @Bind(R.id.changeGroupButton) Button changeGroupButton;
-    @Bind(R.id.moreTimeButton) Button moreTimeButton;
+    @Bind(R.id.estimated_text_view) TextView estimatedTimeTextView;
+    @Bind(R.id.number_text_view) TextView numberTextView;
+    @Bind(R.id.cancel_button) Button cancelButton;
+    @Bind(R.id.change_group_button) Button changeGroupButton;
+    @Bind(R.id.more_time_button) Button moreTimeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +32,7 @@ public class WaitingActivity extends EnqActivity {
 
         ButterKnife.bind(this);
 
-        setupActionBar(R.id.waiting_activity_toolbar, "EnQ");
+        setupActionBar(R.id.waiting_activity_toolbar, "Llamada en espera");
 
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -48,6 +44,28 @@ public class WaitingActivity extends EnqActivity {
         super.onStart();
         estimatedTimeTextView.setText(getIntent().getStringExtra("estimated"));
         numberTextView.setText(getIntent().getStringExtra("number"));
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -58,7 +76,9 @@ public class WaitingActivity extends EnqActivity {
 
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             mService = binder.getService();
-            mService.waitForServerCall();
+
+            if (!mService.isWaitingForServerCall()) mService.waitForServerCall();
+
         }
 
         @Override

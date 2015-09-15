@@ -10,4 +10,8 @@
     <string name="connecting">Conectando...</string>
     <string name="refresh">Actualizar</string>
     <string name="selecc_tipo_atencion">Seleccione el tipo de atención</string>
+    <string name="title_activity_call_received">CallReceivedActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>
