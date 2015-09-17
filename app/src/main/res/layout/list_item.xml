@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:weightSum="1">
+
+    <include layout="@layout/toolbar" android:id="@+id/list_activity_toolbar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/label_prom_esp"
+        android:text="@string/Promedio_espera"
+        android:layout_below="@id/list_activity_toolbar"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/primary"
+        android:textSize="20sp"
+        android:gravity="center_horizontal" />
 
     <Button
         android:layout_width="wrap_content"
@@ -11,13 +24,20 @@
         android:layout_margin="8dp"
         android:layout_weight="0.88"
         android:textSize="15dp"
-        android:padding="20dp" />
+        android:padding="20dp"
+        android:layout_below="@id/label_prom_esp"
+         />
 
     <TextView
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="100"
         android:id="@+id/VestimatedTime"
-        android:layout_margin="15dp" />
-</LinearLayout>
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="41dp"
+        android:layout_alignBaseline="@+id/group_button"
+        android:layout_alignLeft="@+id/label_prom_esp"
+        android:layout_alignStart="@+id/label_prom_esp"
+        android:layout_marginStart="41dp" />
+</RelativeLayout>
