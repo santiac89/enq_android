@@ -5,4 +5,6 @@
     <color name="primaryDark">#008738</color>
     <color name="textColorPrimary">#373435</color>
     <item name="quiet_green" type="color">#50be6c</item>
+    <item name="white" type="color" >#FFFFFF</item>
+    <item name="quiet_gray" type="color">#808080</item>
 </resources>

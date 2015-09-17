@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/title_activity_main"
+            android:textColor="@color/white"
             android:textSize="30sp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/logo_verde"
