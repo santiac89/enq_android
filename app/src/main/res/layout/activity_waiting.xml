@@ -10,79 +10,40 @@
 
     <include layout="@layout/toolbar" android:id="@+id/waiting_activity_toolbar" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cambiar grupo"
-        android:id="@+id/change_group_button"
-        android:layout_above="@+id/cancel_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/estimated_text_view"
-        android:layout_toStartOf="@+id/estimated_text_view" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mas tiempo"
-        android:id="@+id/more_time_button"
-        android:layout_alignTop="@+id/change_group_button"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/change_group_button"
-        android:layout_toEndOf="@+id/change_group_button" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/estimated_text_view"
-        android:layout_alignTop="@+id/estimated_label"
-        android:layout_alignRight="@+id/number_text_view"
-        android:layout_alignEnd="@+id/number_text_view"
-        android:padding="5dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/number_text_view"
+        android:text="0"
+        android:id="@+id/waiting_client_number_text_view"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:textSize="50dp"
+        android:textSize="70dp"
         android:textColor="@color/quiet_green"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cancelar"
-        android:id="@+id/cancel_button"
+        android:background="@drawable/green_button_shape"
+        android:id="@+id/waiting_cancel_button"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/more_time_button"
-        android:layout_alignEnd="@+id/more_time_button" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Tiempo de espera"
-        android:id="@+id/estimated_label"
-        android:layout_marginTop="49dp"
-        android:layout_below="@+id/waiting_activity_toolbar"
-        android:layout_toLeftOf="@+id/estimated_text_view"
-        android:layout_toStartOf="@+id/estimated_text_view"
-        android:padding="5dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Número de cliente"
-        android:id="@+id/textView"
-        android:layout_above="@+id/number_text_view"
+        android:textSize="30dp"
+        android:id="@+id/waiting_client_number_label"
+        android:layout_above="@+id/waiting_client_number_text_view"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

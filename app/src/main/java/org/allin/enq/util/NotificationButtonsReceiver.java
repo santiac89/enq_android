@@ -1,16 +1,14 @@
-package org.allin.enq.service;
+package org.allin.enq.util;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-
 import org.allin.enq.R;
+import org.allin.enq.service.EnqService;
 
 import java.util.Random;
-
 import static org.allin.enq.service.EnqService.*;
 
 /**
@@ -25,12 +23,14 @@ public class NotificationButtonsReceiver extends BroadcastReceiver {
     public static final String EXTEND = "extend";
     public static final String CANCEL = "cancel";
     public static final String TIMEOUT = "client_triggered_timeout";
+    private final Integer DEFAULT_REENQUEUE_COUNT_EXTRA = 3;
 
-    private Integer DEFAULT_REENQUEUE_COUNT_EXTRA = 3;
     private EnqService enqService;
     private Context context;
+    private NotificationManager notificationManager;
 
     public NotificationButtonsReceiver(Context context, EnqService service) {
+        this.notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         this.enqService = service;
         this.context = context;
     }
@@ -49,29 +49,28 @@ public class NotificationButtonsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         String action = intent.getStringExtra(NOTIFICATION_ACTION_EXTRA);
         Integer reenqueueCount = intent.getIntExtra(REENQUEUE_COUNT_EXTRA, DEFAULT_REENQUEUE_COUNT_EXTRA);
 
         switch (action) {
             case CONFIRM:
-                enqService.sendResponse(action);
+                enqService.sendCallResponse(action);
+
                 // TODO Mostrar pantalla de confirmado
             break;
 
             case EXTEND:
-                enqService.sendResponse(action);
-                enqService.waitForServerCall();
+
             break;
 
             case CANCEL:
-                enqService.sendResponse(action);
+                enqService.sendCallResponse(action);
                 // TODO RESET ALL!
             break;
 
             case TIMEOUT:
                 if (reenqueueCount < enqService.getReenqueueLimit())
-                    enqService.waitForServerCall();
+                    enqService.startWaitingForCall();
                 else
                    return;
             break;

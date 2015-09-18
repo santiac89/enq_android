@@ -1,4 +1,4 @@
-package org.allin.enq.service;
+package org.allin.enq.api;
 
 import org.apache.http.util.ByteArrayBuffer;
 
@@ -8,12 +8,13 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Santi on 21/07/2015.
  */
-public class EnqRestApiInfo {
+public class EnqApiInfo {
 
     private String name;
     private String address;
     private Integer port;
     private Integer reenqueue_limit;
+    private Integer call_timeout;
 
     public void fillFromByteArray(byte[] data)
     {
@@ -40,4 +41,6 @@ public class EnqRestApiInfo {
     }
 
     public Integer getReenqueueLimit() { return reenqueue_limit; }
+
+    public Integer getCallTimeout() { return call_timeout; }
 }

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -32,6 +31,8 @@ public class GroupListAdapter implements ListAdapter
         this.groupsList = groupsList;
         this.appContext = appContext;
         this.service = service;
+
+        this.groupsList.add(0,new Group());
     }
 
     @Override
@@ -79,23 +80,38 @@ public class GroupListAdapter implements ListAdapter
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item, parent, false);
+            if (position == 0)
+                convertView = inflater.inflate(R.layout.header_list_item, parent, false);
+            else
+                convertView = inflater.inflate(R.layout.list_item, parent, false);
         }
 
-        Button groupButton = (Button) convertView .findViewById(R.id.group_button);
-        //ImageView queueImage = (ImageView) convertView .findViewById(R.id.VgroupImage);
-        TextView estimatedTime = (TextView) convertView .findViewById(R.id.VestimatedTime);
+        if (position == 0) {
 
-        final Group currentGroup = groupsList.get(position);
+            TextView estimatedTimeColumnLabel = (TextView) convertView .findViewById(R.id.estimated_time_text_view);
+            estimatedTimeColumnLabel.setTypeface(comfortaa_regular);
 
-        groupButton.setTypeface(comfortaa_regular);
-        groupButton.setText(currentGroup.getName());
-        groupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                service.enqueueIn(currentGroup);
-            }
-        });
+        } else {
+
+            Button groupButton = (Button) convertView .findViewById(R.id.group_button);
+            //ImageView queueImage = (ImageView) convertView .findViewById(R.id.VgroupImage);
+            TextView estimatedTimeTextView = (TextView) convertView .findViewById(R.id.estimated_time_text_view);
+
+            final Group currentGroup = groupsList.get(position);
+
+            groupButton.setTypeface(comfortaa_regular);
+            groupButton.setText(currentGroup.getName());
+            groupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    service.enqueueInGroup(currentGroup);
+                }
+            });
+
+            estimatedTimeTextView.setTypeface(comfortaa_regular);
+            estimatedTimeTextView.setText(currentGroup.getEstimatedTime().concat("'"));
+
+        }
 
         return convertView ;
 

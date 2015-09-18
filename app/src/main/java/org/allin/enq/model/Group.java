@@ -6,7 +6,8 @@ package org.allin.enq.model;
 public class Group {
 
     private String name;
-    private String _id;
+    private String _id = "";
+    private String estimated_time;
 
     public String get_id() {
         return _id;
@@ -22,5 +23,10 @@ public class Group {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEstimatedTime()
+    {
+        return "20";
     }
 }

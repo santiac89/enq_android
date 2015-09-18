@@ -1,49 +1,44 @@
 package org.allin.enq.activity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import org.allin.enq.R;
+import org.allin.enq.api.EnqCallInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.util.EnqActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+public class ConfirmedActivity extends EnqActivity {
 
-public class WaitingActivity extends EnqActivity {
+    public static String CONFIRMED_ACTIVITY_EXTRA = "confirmed_activity_extra";
 
-    EnqService enqService = null;
+    @Bind(R.id.confirmed_client_number_text_view) TextView clientNumberTextView;
+    @Bind(R.id.confirmed_paydesk_number_text_view) TextView paydeskNumberTextView;
+    @Bind(R.id.confirmed_close_button) Button closeButton;
 
-    //@Bind(R.id.estimated_text_view) TextView estimatedTimeTextView;
-    @Bind(R.id.waiting_client_number_text_view) TextView numberTextView;
-    @Bind(R.id.waiting_cancel_button) Button cancelButton;
-    //@Bind(R.id.change_group_button) Button changeGroupButton;
-    //@Bind(R.id.more_time_button) Button moreTimeButton;
+    private EnqService enqService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_waiting);
+        setContentView(R.layout.activity_confirmed);
         ButterKnife.bind(this);
-        setupActivity(R.id.waiting_activity_toolbar, "Llamada en espera");
+
+        setupActivity(R.id.confirmed_activity_toolbar, "Turno");
 
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (enqService != null && enqService.clientHasBeenCalled() && enqService.clientReachedReenqueueLimit())
-            finish();
     }
 
     @Override
@@ -55,7 +50,7 @@ public class WaitingActivity extends EnqActivity {
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        moveTaskToBack(false);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -67,15 +62,12 @@ public class WaitingActivity extends EnqActivity {
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             enqService = binder.getService();
 
+            clientNumberTextView.setText(enqService.getClientNumber().toString());
+            paydeskNumberTextView.setText(enqService.getPaydeskNumber().toString());
 
-            if (!enqService.isWaitingForServerCall()) enqService.startWaitingForCall();
-
-            numberTextView.setText(enqService.getClientNumber().toString());
-
-            cancelButton.setOnClickListener(new View.OnClickListener() {
+            closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    enqService.stopWaitingForCall();
                     finish();
                 }
             });

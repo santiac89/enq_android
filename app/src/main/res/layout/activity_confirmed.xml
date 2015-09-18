@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.allin.enq.activity.ConfirmedActivity"
+    android:padding="0dp">
+
+    <include layout="@layout/toolbar" android:id="@+id/confirmed_activity_toolbar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Caja"
+        android:id="@+id/confirmed_paydesk_number_label"
+        android:textSize="30dp"
+        android:layout_marginTop="37dp"
+        android:layout_below="@+id/confirmed_activity_toolbar"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:id="@+id/confirmed_paydesk_number_text_view"
+        android:textColor="@color/quiet_green"
+        android:textSize="80dp"
+        android:layout_below="@+id/confirmed_paydesk_number_label"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Numero de cliente"
+        android:textSize="30dp"
+
+        android:id="@+id/client_number_label"
+        android:layout_above="@+id/confirmed_client_number_text_view"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:textSize="50dp"
+        android:textColor="@color/quiet_green"
+        android:id="@+id/confirmed_client_number_text_view"
+        android:layout_above="@+id/confirmed_close_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="96dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CERRAR"
+        android:id="@+id/confirmed_close_button"
+        android:background="@drawable/green_button_shape"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/confirmed_activity_toolbar"
+        android:layout_alignStart="@+id/confirmed_activity_toolbar"
+        android:layout_alignRight="@+id/confirmed_activity_toolbar"
+        android:layout_alignEnd="@+id/confirmed_activity_toolbar"
+        android:layout_margin="10dp" />
+
+</RelativeLayout>

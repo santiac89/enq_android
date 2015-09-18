@@ -1,89 +1,114 @@
 package org.allin.enq.activity;
 
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.gson.JsonObject;
 import org.allin.enq.R;
 import org.allin.enq.model.Group;
-import org.allin.enq.service.EnqRestApiInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.service.EnqServiceListener;
-import org.allin.enq.service.NotificationButtonsReceiver;
+import org.allin.enq.util.EmptyListAdapter;
+import org.allin.enq.util.EnqActivity;
 import org.allin.enq.util.GroupListAdapter;
+
 import java.util.List;
-import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.RetrofitError;
-import static org.allin.enq.service.NotificationButtonsReceiver.*;
 
 public class MainActivity extends EnqActivity {
 
     @Bind(R.id.groups_list_view) ListView groupListView;
-    @Bind(R.id.refresh_button) Button refreshButton;
-    @Bind(R.id.service_state_text_view) TextView serviceStateTextView;
-    @Bind(R.id.groups_loading_progress_bar) ProgressBar groupsLoadingProgressBar;
+    @Bind(R.id.groups_list_swipe_refresh_layout) SwipeRefreshLayout groupsListSwipeRefreshLayout;
+    @Bind(R.id.no_groups_found_text_view) TextView noGroupsFoundTextView;
+
 
     EnqService mService = null;
     Boolean mBound = false;
     WifiManager wifiManager = null;
+    Integer serverNotFoundRetries = 0;
+    Integer serverNotFoundMaxRetries = 3;
+    Integer groupsNotFoundRetries = 0;
+    Integer groupsNotFoundMaxRetries = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ButterKnife.bind(this);
-
-        setupActionBar(R.id.main_activity_toolbar, "EnQ");
-
-        serviceStateTextView.setTypeface(comfortaa_regular);
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         Intent intent = new Intent(this, EnqService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setupActivity(R.id.main_activity_toolbar, "Tipo de atención");
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unbindService(mConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        refreshButton.setOnClickListener(new View.OnClickListener() {
+        groupsListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
+            public void onRefresh() {
                 if (mBound) {
-                    groupListView.setVisibility(View.INVISIBLE);
-                    groupsLoadingProgressBar.setVisibility(View.VISIBLE);
-                    mService.checkForEnqServer();
-                    refreshButton.setEnabled(false);
+                    noGroupsFoundTextView.setVisibility(View.INVISIBLE);
+                    groupListView.setAdapter(new EmptyListAdapter());
+                    mService.checkForServer();
                 }
             }
         });
+
+
+        groupListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                boolean enable = false;
+                if (groupListView != null && groupListView.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = groupListView.getFirstVisiblePosition() == 0;
+                    // check if the top of the first item is visible
+                    boolean topOfFirstItemVisible = groupListView.getChildAt(0).getTop() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                }
+                groupsListSwipeRefreshLayout.setEnabled(enable);
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
     }
 
+    /**
+     * Connection with the background EnqService
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -100,7 +125,8 @@ public class MainActivity extends EnqActivity {
 
             } else {
 
-                mService.checkForEnqServer();
+                groupsListSwipeRefreshLayout.setRefreshing(true);
+                mService.checkForServer();
             }
         }
 
@@ -111,6 +137,9 @@ public class MainActivity extends EnqActivity {
     };
 
 
+    /**
+     * Creates a modal to ask the user to turn on Wi-Fi and connect to the server network
+     */
     public void promptForWifiNetwork()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -139,6 +168,9 @@ public class MainActivity extends EnqActivity {
 
     }
 
+    /**
+     *  EnqService events listener for MainActivity
+     */
     public class MyServiceListener implements EnqServiceListener
     {
 
@@ -147,25 +179,34 @@ public class MainActivity extends EnqActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    groupListView.setVisibility(View.VISIBLE);
-                    groupsLoadingProgressBar.setVisibility(View.INVISIBLE);
-                    refreshButton.setEnabled(true);
-                    groupListView.setAdapter(new GroupListAdapter(mService,groups, getApplicationContext()));
-
+                    groupListView.setAdapter(new GroupListAdapter(mService, groups, getApplicationContext()));
+                    groupsListSwipeRefreshLayout.setRefreshing(false);
                 }
             });
         }
 
         @Override
         public void OnGroupsNotFound(RetrofitError e) {
-            mService.findGroups();
+            if (groupsNotFoundRetries < groupsNotFoundMaxRetries) {
+                groupsNotFoundRetries++;
+                mService.findGroups();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        noGroupsFoundTextView.setVisibility(View.VISIBLE);
+                        groupListView.setAdapter(new EmptyListAdapter());
+                        groupsListSwipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+
+                groupsNotFoundRetries = 0;
+            }
         }
 
         @Override
-        public void OnClientEnqueued(Map<String, String> result) {
+        public void OnClientEnqueued() {
             Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
-            intent.putExtra("number",result.get("number"));
-            intent.putExtra("estimated",result.get("estimated"));
             startActivity(intent);
         }
 
@@ -174,58 +215,9 @@ public class MainActivity extends EnqActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                Toast.makeText(getApplicationContext(), "Lo sentimos, no se pudo asignar al grupo. Intentelo de nuevo", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.couldnt_assign_group, Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-
-        @Override
-        public void OnServerCall(JsonObject obj) {
-
-            Integer paydeskNumber = obj.get("paydesk").getAsInt();
-            Integer callTimeout = obj.get("call_timeout").getAsInt();
-            Integer reenqueueCount = obj.get("reenqueue_count").getAsInt();
-
-            NotificationButtonsReceiver receiver = new NotificationButtonsReceiver( getApplicationContext(), mService );
-            getApplicationContext().registerReceiver(receiver, new IntentFilter(NOTIFICATION_ACTION));
-
-            PendingIntent confirmPendingIntent = receiver.createPendingIntent(CONFIRM);
-            PendingIntent cancelPendingIntent = receiver.createPendingIntent(CANCEL);
-            PendingIntent timeoutPendingIntent = receiver.createPendingIntent(TIMEOUT, reenqueueCount);
-
-            PendingIntent watitingActivityIntent = PendingIntent.getActivity(getApplicationContext(), 0,new Intent(getApplicationContext(),WaitingActivity.class),PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getBaseContext());
-
-            notificationBuilder
-                .setSmallIcon(R.drawable.icon_bw)
-                .setContentTitle("EnQ")
-                .setContentText("Ya puede acercarse a la caja número " + paydeskNumber.toString())
-                .addAction(
-                        new NotificationCompat.Action(R.drawable.ic_done_black_24dp, "", confirmPendingIntent)
-                )
-                .addAction(
-                        new NotificationCompat.Action(R.drawable.ic_clear_black_24dp, "", cancelPendingIntent)
-                ).setContentIntent(watitingActivityIntent);
-
-            if (reenqueueCount < mService.getReenqueueLimit()) {
-
-                PendingIntent extendPendingIntent = receiver.createPendingIntent(EXTEND);
-
-                notificationBuilder.addAction(
-                        new NotificationCompat.Action(R.drawable.ic_alarm_add_black_24dp, "", extendPendingIntent)
-                );
-            }
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(R.integer.notification_id, notificationBuilder.build());
-
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-            if (Build.VERSION.SDK_INT >= 19)
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, callTimeout, timeoutPendingIntent);
-            else
-                alarmManager.set(AlarmManager.RTC_WAKEUP, callTimeout, timeoutPendingIntent);
         }
 
         @Override
@@ -234,21 +226,26 @@ public class MainActivity extends EnqActivity {
         }
 
         @Override
-        public void OnServerFound(final EnqRestApiInfo enqRestApiInfo) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                refreshButton.setEnabled(true);
-                serviceStateTextView.setBackgroundColor(getResources().getColor(R.color.quiet_green));
-                serviceStateTextView.setText(enqRestApiInfo.getName());
-                }
-            });
-            mService.findGroups();
+        public void OnServerFound() {
+          mService.findGroups();
         }
 
         @Override
         public void OnServerNotFound(Exception e) {
-            mService.checkForEnqServer();
+            if (serverNotFoundRetries < serverNotFoundMaxRetries) {
+                serverNotFoundRetries++;
+                mService.checkForServer();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        groupListView.setAdapter(new EmptyListAdapter());
+                        groupsListSwipeRefreshLayout.setRefreshing(false);
+                        noGroupsFoundTextView.setVisibility(View.VISIBLE);
+                    }
+                });
+                serverNotFoundRetries = 0;
+            }
         }
     }
 
