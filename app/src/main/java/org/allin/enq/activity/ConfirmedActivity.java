@@ -50,7 +50,7 @@ public class ConfirmedActivity extends EnqActivity {
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(false);
+        moveTaskToBack(true);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {

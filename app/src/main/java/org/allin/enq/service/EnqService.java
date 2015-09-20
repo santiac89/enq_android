@@ -1,5 +1,6 @@
 package org.allin.enq.service;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +9,13 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+
 import com.google.gson.Gson;
+
+import org.allin.enq.R;
 import org.allin.enq.activity.CallReceivedActivity;
+import org.allin.enq.activity.WaitingActivity;
 import org.allin.enq.api.EnqCallInfo;
 import org.allin.enq.api.EnqApiClient;
 import org.allin.enq.api.EnqApiInfo;
@@ -37,6 +43,9 @@ import retrofit.RetrofitError;
  * Created by Santi on 20/04/2015.
  */
 public class EnqService extends Service {
+
+    private int FOREGROUND_SERVICE_ID = 138;
+
 
     private final IBinder mBinder = new EnqServiceBinder();
     private WifiManager wifiManager;
@@ -132,7 +141,7 @@ public class EnqService extends Service {
             Map<String,String> clientData = new HashMap<String, String>();
 
             clientData.put("hmac", wifiManager.getConnectionInfo().getMacAddress());
-            clientData.put("ip",getDeviceIpAddress());
+            clientData.put("ip", getDeviceIpAddress());
 
             try {
                 clientEnqueuedInfo = enqApiClient.enqueueIn(selectedGroup.get_id(), clientData);
@@ -158,6 +167,7 @@ public class EnqService extends Service {
         new Thread() {
             @Override
             public void run() {
+
                 String response = null;
 
                 try {
@@ -168,8 +178,11 @@ public class EnqService extends Service {
 
                     serverSocket = new ServerSocket(3131);
                     isWaitingForServerCall = true;
+                    startInForeground();
                     Socket socket = serverSocket.accept();
+                    serverSocket.close();
                     isWaitingForServerCall = false;
+                    stopForeground(true);
                     BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
@@ -190,11 +203,13 @@ public class EnqService extends Service {
         }.start();
     }
 
-    public void stopWaitingForCall() {
+    public void cancelWaiting() {
+
         new Thread() {
 
             @Override
             public void run() {
+
                 try {
                     enqApiClient.cancel(clientEnqueuedInfo.getClientId());
                     serverSocket.close();
@@ -203,6 +218,9 @@ public class EnqService extends Service {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                stopForeground(true);
+
             }
         }.start();
     }
@@ -214,7 +232,6 @@ public class EnqService extends Service {
     public void sendCallResponse(String response) {
         try {
             socketWriter.write(response);
-            serverSocket.close();
             socketWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -291,6 +308,30 @@ public class EnqService extends Service {
         }
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+    public void startInForeground() {
+
+        PendingIntent watitingActivityIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                new Intent(getApplicationContext(),WaitingActivity.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getBaseContext());
+
+        notificationBuilder
+            .setSmallIcon(R.drawable.icon_bw)
+            .setContentTitle("EnQ")
+            .setContentText("Esperando llamado...")
+            .setContentIntent(watitingActivityIntent);
+
+        startForeground(FOREGROUND_SERVICE_ID, notificationBuilder.build());
+    }
 
     @Override
     public IBinder onBind(Intent intent) {

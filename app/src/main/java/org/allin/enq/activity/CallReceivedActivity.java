@@ -23,13 +23,22 @@ import butterknife.ButterKnife;
 
 public class CallReceivedActivity extends EnqActivity {
 
-    public static String CALL_ACTIVITY_EXTRA = "call_activity_extra";
     public static final String CONFIRM = "confirm";
     public static final String EXTEND = "extend";
     public static final String CANCEL = "cancel";
 
-    private EnqCallInfo callInfo;
     private EnqService enqService = null;
+    private Runnable timeoutCallbackRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!enqService.clientReachedReenqueueLimit())
+                enqService.startWaitingForCall();
+
+            finish();
+        }
+    };
+
+    private Handler timeoutHandler = new Handler();
 
     @Bind(R.id.call_received_confirm_button) Button confirmButton;
     @Bind(R.id.call_received_cancel_button) Button cancelButton;
@@ -55,7 +64,6 @@ public class CallReceivedActivity extends EnqActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         unbindService(mConnection);
     }
 
@@ -95,6 +103,7 @@ public class CallReceivedActivity extends EnqActivity {
             confirmButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(CONFIRM);
                     Intent confirmedIntent = new Intent(getApplicationContext(),ConfirmedActivity.class);
                     startActivity(confirmedIntent);
@@ -105,15 +114,16 @@ public class CallReceivedActivity extends EnqActivity {
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(CANCEL);
                     finish();
-                    // TODO RESET ALL!
                 }
             });
 
             extendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(EXTEND);
                     enqService.startWaitingForCall();
                     finish();
@@ -124,14 +134,7 @@ public class CallReceivedActivity extends EnqActivity {
                 extendButton.setVisibility(View.GONE);
             }
 
-            // TODO Esto esta dejando al cliente aun en escucha si confirmo, cancelo o lo que sea
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!enqService.clientReachedReenqueueLimit()) enqService.startWaitingForCall();
-                    CallReceivedActivity.this.finish();
-                }
-            }, enqService.getCallTimeout());
+            timeoutHandler.postDelayed(timeoutCallbackRunnable, enqService.getCallTimeout());
 
 
         }
@@ -141,4 +144,7 @@ public class CallReceivedActivity extends EnqActivity {
 
         }
     };
+
+
+
 }

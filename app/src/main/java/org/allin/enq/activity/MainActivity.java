@@ -38,7 +38,7 @@ public class MainActivity extends EnqActivity {
     @Bind(R.id.no_groups_found_text_view) TextView noGroupsFoundTextView;
 
 
-    EnqService mService = null;
+    EnqService enqService = null;
     Boolean mBound = false;
     WifiManager wifiManager = null;
     Integer serverNotFoundRetries = 0;
@@ -64,7 +64,6 @@ public class MainActivity extends EnqActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         unbindService(mConnection);
     }
 
@@ -77,7 +76,7 @@ public class MainActivity extends EnqActivity {
                 if (mBound) {
                     noGroupsFoundTextView.setVisibility(View.INVISIBLE);
                     groupListView.setAdapter(new EmptyListAdapter());
-                    mService.checkForServer();
+                    enqService.checkForServer();
                 }
             }
         });
@@ -115,10 +114,15 @@ public class MainActivity extends EnqActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
 
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
-            mService = binder.getService();
-            mService.setListener(new MyServiceListener());
+            enqService = binder.getService();
+            enqService.setListener(new MyServiceListener());
             mBound = true;
 
+            if (enqService.isWaitingForServerCall()) {
+                Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
+                startActivity(intent);
+            }
+            
             if (!wifiManager.isWifiEnabled()) {
 
                 promptForWifiNetwork();
@@ -126,7 +130,7 @@ public class MainActivity extends EnqActivity {
             } else {
 
                 groupsListSwipeRefreshLayout.setRefreshing(true);
-                mService.checkForServer();
+                enqService.checkForServer();
             }
         }
 
@@ -179,7 +183,7 @@ public class MainActivity extends EnqActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    groupListView.setAdapter(new GroupListAdapter(mService, groups, getApplicationContext()));
+                    groupListView.setAdapter(new GroupListAdapter(enqService, groups, getApplicationContext()));
                     groupsListSwipeRefreshLayout.setRefreshing(false);
                 }
             });
@@ -189,7 +193,7 @@ public class MainActivity extends EnqActivity {
         public void OnGroupsNotFound(RetrofitError e) {
             if (groupsNotFoundRetries < groupsNotFoundMaxRetries) {
                 groupsNotFoundRetries++;
-                mService.findGroups();
+                enqService.findGroups();
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -206,6 +210,7 @@ public class MainActivity extends EnqActivity {
 
         @Override
         public void OnClientEnqueued() {
+            enqService.startWaitingForCall();
             Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
             startActivity(intent);
         }
@@ -227,14 +232,14 @@ public class MainActivity extends EnqActivity {
 
         @Override
         public void OnServerFound() {
-          mService.findGroups();
+          enqService.findGroups();
         }
 
         @Override
         public void OnServerNotFound(Exception e) {
             if (serverNotFoundRetries < serverNotFoundMaxRetries) {
                 serverNotFoundRetries++;
-                mService.checkForServer();
+                enqService.checkForServer();
             } else {
                 runOnUiThread(new Runnable() {
                     @Override

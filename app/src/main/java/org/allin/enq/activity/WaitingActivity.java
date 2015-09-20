@@ -24,8 +24,6 @@ public class WaitingActivity extends EnqActivity {
     //@Bind(R.id.estimated_text_view) TextView estimatedTimeTextView;
     @Bind(R.id.waiting_client_number_text_view) TextView numberTextView;
     @Bind(R.id.waiting_cancel_button) Button cancelButton;
-    //@Bind(R.id.change_group_button) Button changeGroupButton;
-    //@Bind(R.id.more_time_button) Button moreTimeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,23 +32,20 @@ public class WaitingActivity extends EnqActivity {
         ButterKnife.bind(this);
         setupActivity(R.id.waiting_activity_toolbar, "Llamada en espera");
 
-        Intent intent = new Intent(this, EnqService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (enqService != null && enqService.clientHasBeenCalled() && enqService.clientReachedReenqueueLimit())
-            finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        unbindService(mConnection);
+        Intent intent = new Intent(this, EnqService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -67,15 +62,15 @@ public class WaitingActivity extends EnqActivity {
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             enqService = binder.getService();
 
-
-            if (!enqService.isWaitingForServerCall()) enqService.startWaitingForCall();
+            if (!enqService.isWaitingForServerCall())
+                finish();
 
             numberTextView.setText(enqService.getClientNumber().toString());
 
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    enqService.stopWaitingForCall();
+                    enqService.cancelWaiting();
                     finish();
                 }
             });
