@@ -94,7 +94,6 @@ public class GroupListAdapter implements ListAdapter
         } else {
 
             Button groupButton = (Button) convertView .findViewById(R.id.group_button);
-            //ImageView queueImage = (ImageView) convertView .findViewById(R.id.VgroupImage);
             TextView estimatedTimeTextView = (TextView) convertView .findViewById(R.id.estimated_time_text_view);
 
             final Group currentGroup = groupsList.get(position);

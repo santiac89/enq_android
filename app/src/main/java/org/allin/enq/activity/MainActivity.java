@@ -1,6 +1,5 @@
 package org.allin.enq.activity;
 
-
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,9 +23,7 @@ import org.allin.enq.service.EnqServiceListener;
 import org.allin.enq.util.EmptyListAdapter;
 import org.allin.enq.util.EnqActivity;
 import org.allin.enq.util.GroupListAdapter;
-
 import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.RetrofitError;
@@ -37,14 +34,13 @@ public class MainActivity extends EnqActivity {
     @Bind(R.id.groups_list_swipe_refresh_layout) SwipeRefreshLayout groupsListSwipeRefreshLayout;
     @Bind(R.id.no_groups_found_text_view) TextView noGroupsFoundTextView;
 
+    private final Integer SERVER_NOT_FOUND_MAX_RETRIES = 3;
+    private final Integer GROUPS_NOT_FOUND_MAX_RETRIES = 3;
 
     EnqService enqService = null;
-    Boolean mBound = false;
     WifiManager wifiManager = null;
     Integer serverNotFoundRetries = 0;
-    Integer serverNotFoundMaxRetries = 3;
     Integer groupsNotFoundRetries = 0;
-    Integer groupsNotFoundMaxRetries = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +66,13 @@ public class MainActivity extends EnqActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         groupsListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (mBound) {
-                    noGroupsFoundTextView.setVisibility(View.INVISIBLE);
-                    groupListView.setAdapter(new EmptyListAdapter());
-                    enqService.checkForServer();
-                }
+                noGroupsFoundTextView.setVisibility(View.INVISIBLE);
+                groupListView.setAdapter(new EmptyListAdapter());
+                enqService.checkForServer();
             }
         });
 
@@ -116,13 +111,12 @@ public class MainActivity extends EnqActivity {
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             enqService = binder.getService();
             enqService.setListener(new MyServiceListener());
-            mBound = true;
 
             if (enqService.isWaitingForServerCall()) {
                 Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
                 startActivity(intent);
             }
-            
+
             if (!wifiManager.isWifiEnabled()) {
 
                 promptForWifiNetwork();
@@ -136,7 +130,6 @@ public class MainActivity extends EnqActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
         }
     };
 
@@ -152,19 +145,19 @@ public class MainActivity extends EnqActivity {
             .setTitle(R.string.wifioff_dialog_title)
             .setCancelable(false)
             .setPositiveButton(R.string.wifioff_dialog_settings,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                            startActivity(i);
-                        }
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                        startActivity(i);
                     }
+                }
             )
             .setNegativeButton(R.string.wifioff_dialog_cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            MainActivity.this.finish();
-                        }
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MainActivity.this.finish();
                     }
+                }
             );
 
         AlertDialog alert = builder.create();
@@ -183,24 +176,24 @@ public class MainActivity extends EnqActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    groupListView.setAdapter(new GroupListAdapter(enqService, groups, getApplicationContext()));
-                    groupsListSwipeRefreshLayout.setRefreshing(false);
+                groupListView.setAdapter(new GroupListAdapter(enqService, groups, getApplicationContext()));
+                groupsListSwipeRefreshLayout.setRefreshing(false);
                 }
             });
         }
 
         @Override
         public void OnGroupsNotFound(RetrofitError e) {
-            if (groupsNotFoundRetries < groupsNotFoundMaxRetries) {
+            if (groupsNotFoundRetries < GROUPS_NOT_FOUND_MAX_RETRIES) {
                 groupsNotFoundRetries++;
                 enqService.findGroups();
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        noGroupsFoundTextView.setVisibility(View.VISIBLE);
-                        groupListView.setAdapter(new EmptyListAdapter());
-                        groupsListSwipeRefreshLayout.setRefreshing(false);
+                    noGroupsFoundTextView.setVisibility(View.VISIBLE);
+                    groupListView.setAdapter(new EmptyListAdapter());
+                    groupsListSwipeRefreshLayout.setRefreshing(false);
                     }
                 });
 
@@ -237,16 +230,16 @@ public class MainActivity extends EnqActivity {
 
         @Override
         public void OnServerNotFound(Exception e) {
-            if (serverNotFoundRetries < serverNotFoundMaxRetries) {
+            if (serverNotFoundRetries < SERVER_NOT_FOUND_MAX_RETRIES) {
                 serverNotFoundRetries++;
                 enqService.checkForServer();
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        groupListView.setAdapter(new EmptyListAdapter());
-                        groupsListSwipeRefreshLayout.setRefreshing(false);
-                        noGroupsFoundTextView.setVisibility(View.VISIBLE);
+                    groupListView.setAdapter(new EmptyListAdapter());
+                    groupsListSwipeRefreshLayout.setRefreshing(false);
+                    noGroupsFoundTextView.setVisibility(View.VISIBLE);
                     }
                 });
                 serverNotFoundRetries = 0;
