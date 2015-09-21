@@ -7,7 +7,8 @@ public class Group {
 
     private String name;
     private String _id = "";
-    private String estimated_time;
+    private Integer confirmed_times;
+    private Integer confirmed_clients;
 
     public String get_id() {
         return _id;
@@ -25,8 +26,16 @@ public class Group {
         this.name = name;
     }
 
-    public String getEstimatedTime()
+    public void setConfirmed_times(Integer confirmed_times) {
+        this.confirmed_times = confirmed_times;
+    }
+
+    public void setConfirmed_clients(Integer confirmed_clients) {
+        this.confirmed_clients = confirmed_clients;
+    }
+
+    public Integer getEstimatedTime()
     {
-        return "20";
+        return (confirmed_times / (confirmed_clients == 0 ? 1 : confirmed_clients));
     }
 }

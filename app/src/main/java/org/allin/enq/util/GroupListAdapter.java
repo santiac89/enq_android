@@ -108,7 +108,8 @@ public class GroupListAdapter implements ListAdapter
             });
 
             estimatedTimeTextView.setTypeface(comfortaa_regular);
-            estimatedTimeTextView.setText(currentGroup.getEstimatedTime().concat("'"));
+            Integer timeInMinutes = currentGroup.getEstimatedTime() / 60000;
+            estimatedTimeTextView.setText(timeInMinutes.toString().concat("'"));
 
         }
 
