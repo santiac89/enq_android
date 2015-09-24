@@ -21,7 +21,11 @@ import org.allin.enq.model.EnqCallInfo;
 import org.allin.enq.api.EnqApiClient;
 import org.allin.enq.model.EnqApiInfo;
 import org.allin.enq.model.Group;
+import org.allin.enq.util.CallWebSocket;
 import org.allin.enq.util.EnqProperties;
+import org.allin.enq.util.OnCallListener;
+import org.java_websocket.server.WebSocketServer;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -165,43 +169,22 @@ public class EnqService extends Service {
 
         lastCallInfo = null;
 
-        new Thread() {
+        isWaitingForServerCall = true;
+        startInForeground();
+
+        new CallWebSocket(3131, new OnCallListener() {
             @Override
-            public void run() {
+            public void OnCall(EnqCallInfo enqCallInfo) {
 
-                String response = null;
-
-                try {
-
-                    if (serverSocket != null) {
-                        serverSocket.close();
-                    }
-
-                    serverSocket = new ServerSocket(3131);
-                    isWaitingForServerCall = true;
-                    startInForeground();
-                    Socket socket = serverSocket.accept();
-                    serverSocket.close();
-                    isWaitingForServerCall = false;
-                    stopForeground(true);
-                    BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-                    while (response == null) response = socketReader.readLine();
-
-                } catch (IOException e) {
-                    isWaitingForServerCall = false;
-                    return;
-                }
-
-                lastCallInfo = gson.fromJson(response, EnqCallInfo.class);
+                isWaitingForServerCall = false;
+                stopForeground(true);
 
                 Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
                 callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(callIntent);
 
             }
-        }.start();
+        }).start();
     }
 
     public void cancelWaiting() {
