@@ -1,4 +1,4 @@
-package org.allin.enq.service;
+package org.allin.enq.model;
 
 /**
  * Created by santiagocarullo on 9/17/15.

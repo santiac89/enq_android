@@ -2,7 +2,7 @@ package org.allin.enq.api;
 
 
 import org.allin.enq.model.Group;
-import org.allin.enq.service.ClientEnqueuedInfo;
+import org.allin.enq.model.ClientEnqueuedInfo;
 
 import java.util.List;
 import java.util.Map;

@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.allin.enq.R;
-import org.allin.enq.api.EnqCallInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.util.EnqActivity;
 

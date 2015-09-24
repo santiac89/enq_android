@@ -16,9 +16,10 @@ import com.google.gson.Gson;
 import org.allin.enq.R;
 import org.allin.enq.activity.CallReceivedActivity;
 import org.allin.enq.activity.WaitingActivity;
-import org.allin.enq.api.EnqCallInfo;
+import org.allin.enq.model.ClientEnqueuedInfo;
+import org.allin.enq.model.EnqCallInfo;
 import org.allin.enq.api.EnqApiClient;
-import org.allin.enq.api.EnqApiInfo;
+import org.allin.enq.model.EnqApiInfo;
 import org.allin.enq.model.Group;
 import org.allin.enq.util.EnqProperties;
 import java.io.BufferedReader;
@@ -189,7 +190,7 @@ public class EnqService extends Service {
                     while (response == null) response = socketReader.readLine();
 
                 } catch (IOException e) {
-
+                    isWaitingForServerCall = false;
                     return;
                 }
 

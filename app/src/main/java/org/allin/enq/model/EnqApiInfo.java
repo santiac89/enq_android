@@ -1,4 +1,4 @@
-package org.allin.enq.api;
+package org.allin.enq.model;
 
 import org.apache.http.util.ByteArrayBuffer;
 

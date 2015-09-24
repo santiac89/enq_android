@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import org.allin.enq.R;
-import org.allin.enq.api.EnqCallInfo;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.util.EnqActivity;
 
