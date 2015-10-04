@@ -12,10 +12,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Caja"
         android:id="@+id/confirmed_paydesk_number_label"
-        android:textSize="30dp"
-        android:layout_marginTop="37dp"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"
         android:layout_below="@+id/confirmed_activity_toolbar"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/confirmed_close_button"
+        android:layout_alignStart="@+id/confirmed_close_button" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,32 +25,42 @@
         android:text="0"
         android:id="@+id/confirmed_paydesk_number_text_view"
         android:textColor="@color/quiet_green"
-        android:textSize="80dp"
-        android:layout_below="@+id/confirmed_paydesk_number_label"
-        android:layout_centerHorizontal="true" />
+        android:textSize="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_alignBaseline="@+id/confirmed_paydesk_number_label"
+        android:layout_alignBottom="@+id/confirmed_paydesk_number_label"
+        android:layout_toRightOf="@+id/confirmed_client_number_label"
+        android:layout_alignRight="@+id/confirmed_close_button"
+        android:layout_alignEnd="@+id/confirmed_close_button"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Numero de cliente"
-        android:textSize="30dp"
-
-        android:id="@+id/client_number_label"
-        android:layout_above="@+id/confirmed_client_number_text_view"
-        android:layout_centerHorizontal="true" />
+        android:text="Número de cliente"
+        android:textSize="20sp"
+        android:id="@+id/confirmed_client_number_label"
+        android:layout_alignBaseline="@+id/confirmed_client_number_text_view"
+        android:layout_alignBottom="@+id/confirmed_client_number_text_view"
+        android:layout_alignLeft="@+id/confirmed_paydesk_number_label"
+        android:layout_alignStart="@+id/confirmed_paydesk_number_label" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
-        android:textSize="50dp"
+        android:textSize="30dp"
         android:textColor="@color/quiet_green"
         android:id="@+id/confirmed_client_number_text_view"
-        android:layout_above="@+id/confirmed_close_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="96dp" />
+        android:layout_below="@+id/confirmed_paydesk_number_text_view"
+        android:layout_alignLeft="@+id/confirmed_paydesk_number_text_view"
+        android:layout_alignStart="@+id/confirmed_paydesk_number_text_view"
+        android:layout_alignRight="@+id/confirmed_close_button"
+        android:layout_alignEnd="@+id/confirmed_close_button"
+        android:textAlignment="center" />
 
     <Button
         android:layout_width="wrap_content"

@@ -214,6 +214,8 @@ public class EnqService extends Service {
                 try {
                     enqApiClient.cancel(clientEnqueuedInfo.getClientId());
                     serverSocket.close();
+                    socketWriter.close();
+
                 } catch (RetrofitError e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -316,10 +318,12 @@ public class EnqService extends Service {
 
     public void startInForeground() {
 
+
+        Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
         PendingIntent watitingActivityIntent = PendingIntent.getActivity(
                 getApplicationContext(),
-                0,
-                new Intent(getApplicationContext(),WaitingActivity.class),
+                2,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 

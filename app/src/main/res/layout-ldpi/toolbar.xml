@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:minHeight="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:focusableInTouchMode="true"
+
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/logo_verde"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:src="@drawable/icon_bw"/>
+
+        <TextView android:id="@+id/toolbar_title_text_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/title_activity_main"
+            android:textSize="25dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/logo_verde"
+            android:layout_marginLeft="1dp" />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.Toolbar>
