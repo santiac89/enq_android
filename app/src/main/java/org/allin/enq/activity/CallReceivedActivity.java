@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -68,6 +69,31 @@ public class CallReceivedActivity extends EnqActivity {
 
     private void wakeUp() {
 
+        MediaPlayer mp;
+        mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
+        mp.setLooping(true);
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            int loopTimes = 0;
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                if (loopTimes < 2) {
+                    loopTimes++;
+                    return;
+                }
+
+                mp.reset();
+                mp.release();
+                mp=null;
+            }
+
+        });
+
+        mp.start();
+
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
@@ -78,7 +104,8 @@ public class CallReceivedActivity extends EnqActivity {
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(1000);
+        long[] pattern = {0, 500, 500, 500, 500, 500, 500, 500};
+        vibrator.vibrate(pattern, -1);
 
     }
 

@@ -7,7 +7,7 @@ public class ClientEnqueuedInfo {
 
     private String client_id;
     private Integer client_number;
-    private Integer estimated_time;
+    private Integer time_to_arrive;
 
     public String getClientId() {
         return client_id;
@@ -25,11 +25,11 @@ public class ClientEnqueuedInfo {
         this.client_number = client_number;
     }
 
-    public Integer getEstimatedTime() {
-        return estimated_time;
+    public Integer getTimeToArrive() {
+        return time_to_arrive;
     }
 
-    public void setEstimated_time(Integer estimated_time) {
-        this.estimated_time = estimated_time;
+    public void setTime_to_arrive(Integer time_to_arrive) {
+        this.time_to_arrive = time_to_arrive;
     }
 }

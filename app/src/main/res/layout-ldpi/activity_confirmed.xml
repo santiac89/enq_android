@@ -70,4 +70,17 @@
         android:layout_alignEnd="@+id/confirmed_activity_toolbar"
         android:layout_margin="10dp" />
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:id="@+id/remaining_time_text_view"
+        android:textSize="55sp"
+        android:textColor="@color/quiet_green"
+        android:layout_above="@+id/confirmed_close_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:textIsSelectable="false" />
+
 </RelativeLayout>

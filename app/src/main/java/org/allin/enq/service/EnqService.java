@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -300,6 +301,10 @@ public class EnqService extends Service {
         return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
     }
 
+    public Integer getExpectedTimeToPaydesk() {
+        return clientEnqueuedInfo.getTimeToArrive();
+    }
+
     /**
      * Exception thrown when no server could be found in the network
      */
@@ -317,7 +322,6 @@ public class EnqService extends Service {
     }
 
     public void startInForeground() {
-
 
         Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
         PendingIntent watitingActivityIntent = PendingIntent.getActivity(
@@ -337,6 +341,16 @@ public class EnqService extends Service {
 
         startForeground(FOREGROUND_SERVICE_ID, notificationBuilder.build());
     }
+
+//    public void startTimeoutRefresh() {
+//        AsyncTask timer = new AsyncTask<TextView,Integer,Void>() {
+//
+//            @Override
+//            protected Void doInBackground(TextView... params) {
+//                return null;
+//            }
+//        };
+//    }
 
     @Override
     public IBinder onBind(Intent intent) {
