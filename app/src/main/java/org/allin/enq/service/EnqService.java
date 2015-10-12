@@ -301,8 +301,8 @@ public class EnqService extends Service {
         return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
     }
 
-    public Integer getExpectedTimeToPaydesk() {
-        return clientEnqueuedInfo.getTimeToArrive();
+    public int getPaydeskArrivalTimeout() {
+        return clientEnqueuedInfo.getPaydeskArrivalTimeout();
     }
 
     /**

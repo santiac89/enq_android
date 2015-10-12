@@ -7,7 +7,7 @@ public class ClientEnqueuedInfo {
 
     private String client_id;
     private Integer client_number;
-    private Integer time_to_arrive;
+    private Integer paydesk_arrival_timeout;
 
     public String getClientId() {
         return client_id;
@@ -25,11 +25,11 @@ public class ClientEnqueuedInfo {
         this.client_number = client_number;
     }
 
-    public Integer getTimeToArrive() {
-        return time_to_arrive;
+    public Integer getPaydeskArrivalTimeout() {
+        return paydesk_arrival_timeout;
     }
 
-    public void setTime_to_arrive(Integer time_to_arrive) {
-        this.time_to_arrive = time_to_arrive;
+    public void setPaydesk_arrival_timeout(Integer paydesk_arrival_timeout) {
+        this.paydesk_arrival_timeout = paydesk_arrival_timeout;
     }
 }

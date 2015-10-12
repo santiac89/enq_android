@@ -96,7 +96,7 @@ public class ConfirmedActivity extends EnqActivity {
 
             clientNumberTextView.setText(enqService.getClientNumber().toString());
             paydeskNumberTextView.setText(enqService.getPaydeskNumber().toString());
-            timeToArrive = SystemClock.elapsedRealtime() + (enqService.getExpectedTimeToPaydesk() * 1000);
+            timeToArrive = SystemClock.elapsedRealtime() + (enqService.getPaydeskArrivalTimeout() * 1000);
 
             closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
