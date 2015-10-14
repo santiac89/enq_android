@@ -19,12 +19,12 @@ import retrofit.http.Path;
  */
 public interface EnqApiClient {
 
-    @GET("/groups")
+    @GET("/m/groups")
     List<Group> getGroups();
 
-    @POST("/groups/{groupId}/clients")
+    @POST("/m/groups/{groupId}/clients")
     ClientEnqueuedInfo enqueueIn(@Path("groupId") String groupId, @Body Map<String, String> body);
 
-    @DELETE("/clients/{clientId}")
+    @DELETE("/m/clients/{clientId}")
     String cancel(@Path("clientId") String clientId);
 }
