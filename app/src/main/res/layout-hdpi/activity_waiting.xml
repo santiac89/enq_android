@@ -13,13 +13,47 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Tipo de atención"
+        android:id="@+id/group_name_label"
+        android:textSize="30dp"
+        android:layout_below="@+id/waiting_activity_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="74dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:textColor="@color/quiet_green"
+        android:id="@+id/group_name_text_view"
+        android:textSize="30dp"
+        android:layout_below="@+id/group_name_label"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Número de cliente"
+        android:textSize="30dp"
+        android:id="@+id/waiting_client_number_label"
+        android:layout_above="@+id/waiting_client_number_text_view"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:id="@+id/waiting_client_number_text_view"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:textSize="70dp"
-        android:textColor="@color/quiet_green"/>
+        android:textColor="@color/quiet_green"
+        android:layout_above="@+id/waiting_cancel_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="56dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -37,14 +71,4 @@
         android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         android:stateListAnimator="@null" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Número de cliente"
-        android:textSize="30dp"
-        android:id="@+id/waiting_client_number_label"
-        android:layout_above="@+id/waiting_client_number_text_view"
-        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -60,7 +60,8 @@
         android:layout_alignStart="@+id/confirmed_activity_toolbar"
         android:layout_alignRight="@+id/confirmed_activity_toolbar"
         android:layout_alignEnd="@+id/confirmed_activity_toolbar"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:visibility="invisible" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -73,5 +74,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:textIsSelectable="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Acerquese a caja antes de"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/confirmed_client_number_text_view"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

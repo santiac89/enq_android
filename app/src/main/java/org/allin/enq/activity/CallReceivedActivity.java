@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,12 +41,14 @@ public class CallReceivedActivity extends EnqActivity {
     };
 
     private Handler timeoutHandler = new Handler();
+    private CountDownTimer countDownTimer;
 
     @Bind(R.id.call_received_confirm_button) Button confirmButton;
     @Bind(R.id.call_received_cancel_button) Button cancelButton;
     @Bind(R.id.call_received_extend_button) Button extendButton;
     @Bind(R.id.call_received_paydesk_number_text_view) TextView paydeskNumberTextView;
     @Bind(R.id.call_received_client_number_text_view) TextView clientNumberTextView;
+    @Bind(R.id.remaining_to_response_text_view) TextView remainingTimeToResponseTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +118,25 @@ public class CallReceivedActivity extends EnqActivity {
         moveTaskToBack(true);
     }
 
+    public void startCountdown() {
+
+        countDownTimer = new CountDownTimer(enqService.getCallTimeout(), 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                Long seconds = millisUntilFinished / 1000;
+                remainingTimeToResponseTextView.setText(seconds.toString());
+            }
+
+            public void onFinish() {
+            }
+
+        };
+
+
+        countDownTimer.start();
+
+    }
+
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -125,6 +148,7 @@ public class CallReceivedActivity extends EnqActivity {
 
             paydeskNumberTextView.setText(enqService.getPaydeskNumber().toString());
             clientNumberTextView.setText(enqService.getClientNumber().toString());
+            extendButton.setText("EXTENDER (" +enqService.getNextEstimatedTime()+ "')");
 
             confirmButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -161,6 +185,7 @@ public class CallReceivedActivity extends EnqActivity {
             }
 
             timeoutHandler.postDelayed(timeoutCallbackRunnable, enqService.getCallTimeout());
+            startCountdown();
 
 
         }

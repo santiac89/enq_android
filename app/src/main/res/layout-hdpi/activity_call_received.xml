@@ -35,7 +35,7 @@
         android:textSize="30dp"
 
         android:id="@+id/client_number_label"
-        android:layout_above="@+id/call_received_client_number_text_view"
+        android:layout_below="@+id/call_received_paydesk_number_text_view"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -46,7 +46,7 @@
         android:textSize="50dp"
         android:textColor="@color/quiet_green"
         android:id="@+id/call_received_client_number_text_view"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/client_number_label"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -95,4 +95,16 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="00"
+        android:id="@+id/remaining_to_response_text_view"
+        android:layout_below="@+id/call_received_client_number_text_view"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

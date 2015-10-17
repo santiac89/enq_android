@@ -23,6 +23,7 @@ public class WaitingActivity extends EnqActivity {
 
     //@Bind(R.id.estimated_text_view) TextView estimatedTimeTextView;
     @Bind(R.id.waiting_client_number_text_view) TextView numberTextView;
+    @Bind(R.id.group_name_text_view) TextView groupNameTextView;
     @Bind(R.id.waiting_cancel_button) Button cancelButton;
 
     @Override
@@ -66,6 +67,7 @@ public class WaitingActivity extends EnqActivity {
                 finish();
 
             numberTextView.setText(enqService.getClientNumber().toString());
+            groupNameTextView.setText(enqService.getGroupName());
 
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override

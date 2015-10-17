@@ -305,6 +305,14 @@ public class EnqService extends Service {
         return clientEnqueuedInfo.getPaydeskArrivalTimeout();
     }
 
+    public String getGroupName() {
+        return clientEnqueuedInfo.getGroupName();
+    }
+
+    public String getNextEstimatedTime() {
+        return lastCallInfo.getNextEstimatedTime().toString();
+    }
+
     /**
      * Exception thrown when no server could be found in the network
      */

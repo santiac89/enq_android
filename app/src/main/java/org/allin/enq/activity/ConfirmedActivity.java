@@ -75,6 +75,7 @@ public class ConfirmedActivity extends EnqActivity {
             }
 
             public void onFinish() {
+                closeButton.setVisibility(View.VISIBLE);
                 remainingTimeTextView.setText("00:00");
             }
 

@@ -8,6 +8,7 @@ public class ClientEnqueuedInfo {
     private String client_id;
     private Integer client_number;
     private Integer paydesk_arrival_timeout;
+    private String group_name;
 
     public String getClientId() {
         return client_id;
@@ -31,5 +32,13 @@ public class ClientEnqueuedInfo {
 
     public void setPaydesk_arrival_timeout(Integer paydesk_arrival_timeout) {
         this.paydesk_arrival_timeout = paydesk_arrival_timeout;
+    }
+
+    public void setGroup_name(String name) {
+        group_name = name;
+    }
+
+    public String getGroupName() {
+        return group_name;
     }
 }

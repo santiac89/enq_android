@@ -9,6 +9,7 @@ public class EnqCallInfo implements Serializable {
 
     private Integer paydesk_number;
     private Integer reenqueue_count;
+    private Integer next_estimated_time;
 
     public Integer getPaydeskNumber() {
         return paydesk_number;
@@ -26,4 +27,11 @@ public class EnqCallInfo implements Serializable {
         this.reenqueue_count = reenqueue_count;
     }
 
+    public Integer getNextEstimatedTime() {
+        return next_estimated_time;
+    }
+
+    public void setNext_estimated_time(Integer next_estimated_time) {
+        this.next_estimated_time = next_estimated_time;
+    }
 }
