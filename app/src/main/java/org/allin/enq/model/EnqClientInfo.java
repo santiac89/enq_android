@@ -3,7 +3,7 @@ package org.allin.enq.model;
 /**
  * Created by santiagocarullo on 9/17/15.
  */
-public class ClientEnqueuedInfo {
+public class EnqClientInfo {
 
     private String client_id;
     private Integer client_number;

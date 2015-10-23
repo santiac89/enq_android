@@ -36,9 +36,7 @@ public class ConfirmedActivity extends EnqActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmed);
         ButterKnife.bind(this);
-
         setupActivity(R.id.confirmed_activity_toolbar, "Turno");
-
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }

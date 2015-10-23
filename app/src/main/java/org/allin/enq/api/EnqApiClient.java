@@ -2,7 +2,7 @@ package org.allin.enq.api;
 
 
 import org.allin.enq.model.Group;
-import org.allin.enq.model.ClientEnqueuedInfo;
+import org.allin.enq.model.EnqClientInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public interface EnqApiClient {
     List<Group> getGroups();
 
     @POST("/m/groups/{groupId}/clients")
-    ClientEnqueuedInfo enqueueIn(@Path("groupId") String groupId, @Body Map<String, String> body);
+    EnqClientInfo enqueueIn(@Path("groupId") String groupId, @Body Map<String, String> body);
 
     @DELETE("/m/clients/{clientId}")
     String cancel(@Path("clientId") String clientId);
