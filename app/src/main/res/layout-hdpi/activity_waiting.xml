@@ -60,6 +60,7 @@
         android:layout_height="wrap_content"
         android:text="Cancelar"
         android:background="@drawable/green_button_shape"
+        android:textColor="@color/white"
         android:id="@+id/waiting_cancel_button"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"

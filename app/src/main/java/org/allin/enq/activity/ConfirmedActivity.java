@@ -85,7 +85,6 @@ public class ConfirmedActivity extends EnqActivity {
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {

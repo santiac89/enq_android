@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary">#38A23D</color>
-    <color name="primaryDark">#008738</color>
-    <color name="textColorPrimary">#373435</color>
-    <item name="quiet_green" type="color">#50be6c</item>
+    <color name="primary">#007cdc</color>
+    <color name="primaryDark">#007cdc</color>
+    <color name="textColorPrimary">#808080</color>
+    <color name="white">#FFFFFF</color>
+    <item name="quiet_green" type="color">#007cdc</item>
     <item name="quiet_gray" type="color">#808080</item>
+
+    <!--<color name="primary">#38A23D</color>-->
+    <!--<color name="primaryDark">#008738</color>-->
+    <!--<color name="textColorPrimary">#373435</color>-->
+    <!--<item name="quiet_green" type="color">#50be6c</item>-->
+    <!--<item name="quiet_gray" type="color">#808080</item>-->
 </resources>

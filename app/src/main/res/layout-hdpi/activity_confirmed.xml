@@ -55,6 +55,7 @@
         android:text="CERRAR"
         android:id="@+id/confirmed_close_button"
         android:background="@drawable/green_button_shape"
+        android:textColor="@color/white"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/confirmed_activity_toolbar"
         android:layout_alignStart="@+id/confirmed_activity_toolbar"

@@ -20,6 +20,8 @@ import org.allin.enq.R;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.util.EnqActivity;
 
+import java.io.IOException;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -42,7 +44,7 @@ public class CallReceivedActivity extends EnqActivity {
 
     private Handler timeoutHandler = new Handler();
     private CountDownTimer countDownTimer;
-
+    private MediaPlayer mp;
     @Bind(R.id.call_received_confirm_button) Button confirmButton;
     @Bind(R.id.call_received_cancel_button) Button cancelButton;
     @Bind(R.id.call_received_extend_button) Button extendButton;
@@ -73,30 +75,7 @@ public class CallReceivedActivity extends EnqActivity {
 
     private void wakeUp() {
 
-        MediaPlayer mp;
-        mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
-        mp.setLooping(true);
 
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-            int loopTimes = 0;
-
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                if (loopTimes < 2) {
-                    loopTimes++;
-                    return;
-                }
-
-                mp.reset();
-                mp.release();
-                mp=null;
-            }
-
-        });
-
-        mp.start();
 
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
@@ -111,6 +90,10 @@ public class CallReceivedActivity extends EnqActivity {
         long[] pattern = {0, 500, 500, 500, 500, 500, 500, 500};
         vibrator.vibrate(pattern, -1);
 
+        mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
+        mp.setLooping(true);
+        mp.start();
+        mp.setOnCompletionListener(new SoundtrackPlayerListener());
     }
 
     @Override
@@ -195,6 +178,25 @@ public class CallReceivedActivity extends EnqActivity {
 
         }
     };
+
+    private class SoundtrackPlayerListener implements MediaPlayer.OnCompletionListener{
+
+        int loopTimes = 0;
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+            if (loopTimes < 2) {
+                loopTimes++;
+                return;
+            }
+
+            mp.reset();
+            mp.release();
+            mp = null;
+        }
+    }
+
 
 
 

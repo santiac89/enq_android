@@ -198,17 +198,24 @@ public class EnqService extends Service {
     }
 
     public void cancelWaiting() {
-        try {
-            apiClient.cancel(clientInfo.getClientId());
-            serverSocket.close();
-            socketWriter.close();
-        } catch (RetrofitError e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    apiClient.cancel(clientInfo.getClientId());
+                    serverSocket.close();
+                    socketWriter.close();
+                } catch (RetrofitError e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        stopForeground(true);
+                stopForeground(true);
+                return null;
+            }
+        }.execute();
+
     }
 
     /**
