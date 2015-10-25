@@ -91,7 +91,7 @@ public class CallReceivedActivity extends EnqActivity {
         vibrator.vibrate(pattern, -1);
 
         mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
-        mp.setLooping(true);
+        mp.setLooping(false);
         mp.start();
         mp.setOnCompletionListener(new SoundtrackPlayerListener());
     }
@@ -188,6 +188,8 @@ public class CallReceivedActivity extends EnqActivity {
 
             if (loopTimes < 2) {
                 loopTimes++;
+                mp.seekTo(0);
+                mp.start();
                 return;
             }
 
