@@ -34,7 +34,7 @@ public interface EnqServiceListener {
      * Called when no groups could be retrieved from the server
      * @param e RetrofitError about why the groups couldn't be retrieved
      */
-    void OnGroupsNotFound(RetrofitError e);
+    void OnGroupsNotFound();
 
     /**
      * Called when the client was successfully enqueued in a group

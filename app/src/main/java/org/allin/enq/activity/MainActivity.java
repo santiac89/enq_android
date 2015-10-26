@@ -72,7 +72,7 @@ public class MainActivity extends EnqActivity {
             public void onRefresh() {
                 noGroupsFoundTextView.setVisibility(View.INVISIBLE);
                 groupListView.setAdapter(new EmptyListAdapter());
-                enqService.checkForServer();
+                enqService.queryForServer();
             }
         });
 
@@ -124,7 +124,7 @@ public class MainActivity extends EnqActivity {
             } else {
 
                 groupsListSwipeRefreshLayout.setRefreshing(true);
-                enqService.checkForServer();
+                enqService.queryForServer();
             }
         }
 
@@ -183,7 +183,7 @@ public class MainActivity extends EnqActivity {
         }
 
         @Override
-        public void OnGroupsNotFound(RetrofitError e) {
+        public void OnGroupsNotFound() {
             if (groupsNotFoundRetries < GROUPS_NOT_FOUND_MAX_RETRIES) {
                 groupsNotFoundRetries++;
                 enqService.findGroups();
@@ -232,7 +232,7 @@ public class MainActivity extends EnqActivity {
         public void OnServerNotFound(Exception e) {
             if (serverNotFoundRetries < SERVER_NOT_FOUND_MAX_RETRIES) {
                 serverNotFoundRetries++;
-                enqService.checkForServer();
+                enqService.queryForServer();
             } else {
                 runOnUiThread(new Runnable() {
                     @Override

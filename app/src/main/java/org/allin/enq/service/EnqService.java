@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Binder;
@@ -21,7 +22,11 @@ import org.allin.enq.model.EnqCallInfo;
 import org.allin.enq.api.EnqApiClient;
 import org.allin.enq.model.EnqApiInfo;
 import org.allin.enq.model.Group;
+import org.allin.enq.util.CallReceivedCallback;
+import org.allin.enq.util.CallReceiver;
 import org.allin.enq.util.EnqProperties;
+import org.allin.enq.util.NetworkUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -30,9 +35,15 @@ import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,15 +62,12 @@ public class EnqService extends Service {
     private WifiManager wifiManager;
     private EnqServiceListener serviceListener;
     private Gson gson = new Gson();
-    private ServerSocket serverSocket = null;
-    private BufferedWriter socketWriter = null;
-
-    private Boolean isWaitingForServerCall = false;
 
     private EnqApiClient apiClient;
     private EnqApiInfo apiInfo;
     private EnqCallInfo callInfo;
     private EnqClientInfo clientInfo;
+    private CallReceiver callReceiver = new CallReceiver();
 
 
     /**
@@ -72,10 +80,16 @@ public class EnqService extends Service {
             @Override
             protected Void doInBackground(Void... params) {
                 List<Group> groups = null;
+
                 try {
                     groups = apiClient.getGroups();
                 } catch (RetrofitError e) {
-                    serviceListener.OnGroupsNotFound(e);
+                    serviceListener.OnGroupsNotFound();
+                    return null;
+                }
+
+                if (groups.size() == 0) {
+                    serviceListener.OnGroupsNotFound();
                     return null;
                 }
 
@@ -91,30 +105,39 @@ public class EnqService extends Service {
     /**
      *  Senses the network for broadcast messages from the server and retrieves information about it
      */
-    public void checkForServer()
+    public void queryForServer()
     {
         new AsyncTask<Void,Void,Void>() {
 
             @Override
             protected Void doInBackground(Void... params) {
 
-                DatagramPacket packet;
-
-                try {
-                    packet = receiveBroadcastMessage();
-                } catch(ServerNotPresentException e) {
-                    serviceListener.OnServerNotFound(e);
-                    return null;
-                }
-
-                apiInfo = gson.fromJson(new String(packet.getData()).trim(), EnqApiInfo.class);
-
-                apiClient = new RestAdapter.Builder()
-                        .setEndpoint("http://" + apiInfo.getAddress() + ":" + apiInfo.getPort().toString())
-                        .build().create(EnqApiClient.class);
-
-                serviceListener.OnServerFound();
+            try {
+                NetworkUtils.sendBroadcastMessage(getApplicationContext(),"whereareyou?", 6000);
+            } catch (SocketException e) {
+                serviceListener.OnServerNotFound(e);
                 return null;
+            } catch (IOException e) {
+                serviceListener.OnServerNotFound(e);
+                return null;
+            }
+
+            String response;
+            try {
+                response = NetworkUtils.receiveSingleTCPMessage(6001, 5000);
+            } catch (IOException e) {
+                serviceListener.OnServerNotFound(e);
+                return null;
+            }
+
+            apiInfo = gson.fromJson(response, EnqApiInfo.class);
+
+            apiClient = new RestAdapter.Builder()
+                    .setEndpoint("http://" + apiInfo.getAddress() + ":" + apiInfo.getPort().toString())
+                    .build().create(EnqApiClient.class);
+
+            serviceListener.OnServerFound();
+            return null;
 
             }
         }.execute();
@@ -135,7 +158,6 @@ public class EnqService extends Service {
             Map<String,String> clientData = new HashMap<String, String>();
 
             clientData.put("hmac", wifiManager.getConnectionInfo().getMacAddress());
-            clientData.put("ip", getDeviceIpAddress());
 
             try {
                 clientInfo = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
@@ -155,64 +177,23 @@ public class EnqService extends Service {
      * Opens a TCP socket in this device to wait for the call from the server
      */
     public void startWaitingForCall() {
-
-        callInfo = null;
-
-        new Thread() {
-            @Override
-            public void run() {
-
-                String response = null;
-
-                try {
-
-                    if (serverSocket != null) {
-                        serverSocket.close();
-                    }
-
-                    serverSocket = new ServerSocket(3131);
-                    isWaitingForServerCall = true;
-                    startInForeground();
-                    Socket socket = serverSocket.accept();
-                    serverSocket.close();
-                    isWaitingForServerCall = false;
-                    stopForeground(true);
-                    BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-                    while (response == null) response = socketReader.readLine();
-
-                } catch (IOException e) {
-                    isWaitingForServerCall = false;
-                    return;
-                }
-
-                callInfo = gson.fromJson(response, EnqCallInfo.class);
-
-                Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
-                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(callIntent);
-
-            }
-        }.start();
+        callReceiver.start(3131);
+        startInForeground();
     }
 
     public void cancelWaiting() {
         new AsyncTask<Void,Void,Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                try {
-                    apiClient.cancel(clientInfo.getClientId());
-                    serverSocket.close();
-                    socketWriter.close();
-                } catch (RetrofitError e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                apiClient.cancel(clientInfo.getClientId());
+                callReceiver.stop();
+            } catch (RetrofitError e) {
+                e.printStackTrace();
+            }
 
-                stopForeground(true);
-                return null;
+            stopForeground(true);
+            return null;
             }
         }.execute();
 
@@ -222,96 +203,34 @@ public class EnqService extends Service {
      * Sends a message to the server using the opened TCP Socket
      * @param response The message to send
      */
-    public void sendCallResponse(String response) {
-        try {
-            socketWriter.write(response);
-            socketWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * This method puts this device to listen for broadcast messages from the server in the port
-     * specified by the configuration
-     *
-     * @return A DatagramPacket with data from the broadcast
-     * @throws ServerNotPresentException When no message arrived passed certain time
-     */
-    @Nullable
-    private DatagramPacket receiveBroadcastMessage() throws ServerNotPresentException {
-
-        DatagramSocket socket = null;
-
-        try {
-            socket = new DatagramSocket(Integer.valueOf(EnqProperties.getProperty("broadcast.port")));
-            socket.setBroadcast(true);
-            socket.setSoTimeout(Integer.valueOf(EnqProperties.getProperty("broadcast.timeout")));
-        } catch (SocketException e) {
-            socket.close();
-            throw new ServerNotPresentException(e);
-        }
-
-        DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
-
-        try {
-            socket.receive(packet);
-            socket.close();
-        } catch (IOException e) {
-           socket.close();
-           if (e instanceof InterruptedIOException) {
-               throw new ServerNotPresentException(e);
-           }
-        }
-
-        return packet;
+    public void sendCallResponse(final String response) {
+        callReceiver.respond(response);
     }
 
     public Boolean isWaitingForServerCall() {
-        return isWaitingForServerCall;
+        return callReceiver.isWaiting();
     }
 
     public Integer getCallTimeout() {
         return apiInfo.getCallTimeout();
     }
 
-    public Integer getClientNumber() {
-        return clientInfo.getClientNumber();
-    }
-
-    public Integer getPaydeskNumber() {
-        return callInfo.getPaydeskNumber();
-    }
-
-    public Boolean clientReachedReenqueueLimit() {
-         return callInfo.getReenqueueCount() >= apiInfo.getReenqueueLimit() ;
-    }
-
-    private String getDeviceIpAddress() {
-        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
-        return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
-    }
-
-    public int getPaydeskArrivalTimeout() {
-        return clientInfo.getPaydeskArrivalTimeout();
-    }
-
-    public String getGroupName() {
-        return clientInfo.getGroupName();
-    }
+    public Integer getPaydeskNumber() { return callInfo.getPaydeskNumber(); }
 
     public String getNextEstimatedTime() {
         return callInfo.getNextEstimatedTime().toString();
     }
 
-    /**
-     * Exception thrown when no server could be found in the network
-     */
-    private class ServerNotPresentException extends RuntimeException
-    {
-        public ServerNotPresentException(Throwable throwable) {
-            super(throwable);
-        }
+    public Boolean clientReachedReenqueueLimit() { return callInfo.getReenqueueCount() >= apiInfo.getReenqueueLimit(); }
+
+    public Integer getPaydeskArrivalTimeout() {
+        return clientInfo.getPaydeskArrivalTimeout();
+    }
+
+    public Integer getClientNumber() { return clientInfo.getClientNumber(); }
+
+    public String getGroupName() {
+        return clientInfo.getGroupName();
     }
 
     @Override
@@ -343,7 +262,20 @@ public class EnqService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         EnqProperties.load(getApplicationContext());
+
+        callReceiver.setCallback(new CallReceivedCallback() {
+            @Override
+            public void call(EnqCallInfo info) {
+                callInfo = info;
+                stopForeground(true);
+                Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
+                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(callIntent);
+            }
+        });
+
         return serviceBinder;
     }
 
