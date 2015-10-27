@@ -88,11 +88,6 @@ public class EnqService extends Service {
                     return null;
                 }
 
-                if (groups.size() == 0) {
-                    serviceListener.OnGroupsNotFound();
-                    return null;
-                }
-
                 serviceListener.OnGroupsFound(groups);
                 return null;
             }

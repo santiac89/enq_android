@@ -176,7 +176,13 @@ public class MainActivity extends EnqActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                groupListView.setAdapter(new GroupListAdapter(enqService, groups, getApplicationContext()));
+                if (groups.size() == 0) {
+                    noGroupsFoundTextView.setVisibility(View.VISIBLE);
+                    groupListView.setAdapter(new EmptyListAdapter());
+                } else {
+                    groupListView.setAdapter(new GroupListAdapter(enqService, groups, getApplicationContext()));
+                }
+
                 groupsListSwipeRefreshLayout.setRefreshing(false);
                 }
             });
@@ -204,7 +210,7 @@ public class MainActivity extends EnqActivity {
         @Override
         public void OnClientEnqueued() {
             enqService.startWaitingForCall();
-            Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
+            Intent intent = new Intent(getApplicationContext(), WaitingActivity.class);
             startActivity(intent);
         }
 
