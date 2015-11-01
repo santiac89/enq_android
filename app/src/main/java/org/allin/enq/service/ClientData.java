@@ -1,9 +1,9 @@
-package org.allin.enq.model;
+package org.allin.enq.service;
 
 /**
  * Created by santiagocarullo on 9/17/15.
  */
-public class EnqClientInfo {
+public class ClientData {
 
     private String client_id;
     private Integer client_number;

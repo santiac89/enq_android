@@ -1,11 +1,11 @@
-package org.allin.enq.model;
+package org.allin.enq.service;
 
 import java.io.Serializable;
 
 /**
  * Created by santiagocarullo on 9/17/15.
  */
-public class EnqCallInfo implements Serializable {
+public class CallData implements Serializable {
 
     private Integer paydesk_number;
     private Integer reenqueue_count;

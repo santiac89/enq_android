@@ -4,12 +4,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
@@ -17,33 +15,14 @@ import com.google.gson.Gson;
 import org.allin.enq.R;
 import org.allin.enq.activity.CallReceivedActivity;
 import org.allin.enq.activity.WaitingActivity;
-import org.allin.enq.model.EnqClientInfo;
-import org.allin.enq.model.EnqCallInfo;
-import org.allin.enq.api.EnqApiClient;
-import org.allin.enq.model.EnqApiInfo;
+import org.allin.enq.api.ApiClient;
+import org.allin.enq.api.ApiInfo;
 import org.allin.enq.model.Group;
-import org.allin.enq.util.CallReceivedCallback;
-import org.allin.enq.util.CallReceiver;
 import org.allin.enq.util.EnqProperties;
 import org.allin.enq.util.NetworkUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.io.OutputStreamWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +42,11 @@ public class EnqService extends Service {
     private EnqServiceListener serviceListener;
     private Gson gson = new Gson();
 
-    private EnqApiClient apiClient;
-    private EnqApiInfo apiInfo;
-    private EnqCallInfo callInfo;
-    private EnqClientInfo clientInfo;
-    private CallReceiver callReceiver = new CallReceiver();
+    private ApiClient apiClient;
+    private ApiInfo apiInfo;
+    private CallData callData;
+    private ClientData clientData;
+    private CallManager callManager = new CallManager();
 
 
     /**
@@ -100,7 +79,7 @@ public class EnqService extends Service {
     /**
      *  Senses the network for broadcast messages from the server and retrieves information about it
      */
-    public void queryForServer()
+    public void findService()
     {
         new AsyncTask<Void,Void,Void>() {
 
@@ -125,11 +104,11 @@ public class EnqService extends Service {
                 return null;
             }
 
-            apiInfo = gson.fromJson(response, EnqApiInfo.class);
+            apiInfo = gson.fromJson(response, ApiInfo.class);
 
             apiClient = new RestAdapter.Builder()
                     .setEndpoint("http://" + apiInfo.getAddress() + ":" + apiInfo.getPort().toString())
-                    .build().create(EnqApiClient.class);
+                    .build().create(ApiClient.class);
 
             serviceListener.OnServerFound();
             return null;
@@ -155,7 +134,7 @@ public class EnqService extends Service {
             clientData.put("hmac", wifiManager.getConnectionInfo().getMacAddress());
 
             try {
-                clientInfo = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
+                EnqService.this.clientData = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
             } catch (RetrofitError e) {
                 serviceListener.OnClientNotEnqueued(e);
                 return null;
@@ -172,18 +151,29 @@ public class EnqService extends Service {
      * Opens a TCP socket in this device to wait for the call from the server
      */
     public void startWaitingForCall() {
-        callReceiver.start(3131);
+        callManager.setCallback(new CallReceivedCallback() {
+            @Override
+            public void call(CallData info) {
+                callData = info;
+                Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
+                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(callIntent);
+                stopForeground(true);
+            }
+        });
+        callManager.start(3131);
         startInForeground();
     }
 
-    public void cancelWaiting() {
+    public void cancelWaitingForCall() {
         new AsyncTask<Void,Void,Void>() {
             @Override
             protected Void doInBackground(Void... params) {
             try {
-                apiClient.cancel(clientInfo.getClientId());
-                callReceiver.stop();
+                apiClient.cancel(clientData.getClientId());
+                callManager.stop();
             } catch (RetrofitError e) {
+                stopForeground(true);
                 e.printStackTrace();
             }
 
@@ -199,33 +189,27 @@ public class EnqService extends Service {
      * @param response The message to send
      */
     public void sendCallResponse(final String response) {
-        callReceiver.respond(response);
+        callManager.respond(response);
     }
 
     public Boolean isWaitingForServerCall() {
-        return callReceiver.isWaiting();
+        return callManager.isWaiting();
     }
 
-    public Integer getCallTimeout() {
-        return apiInfo.getCallTimeout();
-    }
+    public Integer getCallTimeout() { return apiInfo.getCallTimeout(); }
 
-    public Integer getPaydeskNumber() { return callInfo.getPaydeskNumber(); }
+    public Integer getPaydeskNumber() { return callData.getPaydeskNumber(); }
 
-    public String getNextEstimatedTime() {
-        return callInfo.getNextEstimatedTime().toString();
-    }
+    public String getNextEstimatedTime() { return callData.getNextEstimatedTime().toString(); }
 
-    public Boolean clientReachedReenqueueLimit() { return callInfo.getReenqueueCount() >= apiInfo.getReenqueueLimit(); }
+    public Boolean clientReachedReenqueueLimit() { return callData.getReenqueueCount() >= apiInfo.getReenqueueLimit(); }
 
-    public Integer getPaydeskArrivalTimeout() {
-        return clientInfo.getPaydeskArrivalTimeout();
-    }
+    public Integer getPaydeskArrivalTimeout() { return clientData.getPaydeskArrivalTimeout(); }
 
-    public Integer getClientNumber() { return clientInfo.getClientNumber(); }
+    public Integer getClientNumber() { return clientData.getClientNumber(); }
 
     public String getGroupName() {
-        return clientInfo.getGroupName();
+        return clientData.getGroupName();
     }
 
     @Override
@@ -257,20 +241,7 @@ public class EnqService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
         EnqProperties.load(getApplicationContext());
-
-        callReceiver.setCallback(new CallReceivedCallback() {
-            @Override
-            public void call(EnqCallInfo info) {
-                callInfo = info;
-                stopForeground(true);
-                Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
-                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(callIntent);
-            }
-        });
-
         return serviceBinder;
     }
 
@@ -288,4 +259,10 @@ public class EnqService extends Service {
         this.serviceListener = listener;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cancelWaitingForCall();
+        stopForeground(true);
+    }
 }

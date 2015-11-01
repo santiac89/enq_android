@@ -1,4 +1,4 @@
-package org.allin.enq.model;
+package org.allin.enq.api;
 
 import org.apache.http.util.ByteArrayBuffer;
 
@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Santi on 21/07/2015.
  */
-public class EnqApiInfo {
+public class ApiInfo {
 
     private String name;
     private String address;

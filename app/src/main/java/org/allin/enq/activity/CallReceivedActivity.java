@@ -32,6 +32,7 @@ public class CallReceivedActivity extends EnqActivity {
     public static final String CANCEL = "cancel";
 
     private EnqService enqService = null;
+
     private Runnable timeoutCallbackRunnable = new Runnable() {
         @Override
         public void run() {
@@ -45,6 +46,8 @@ public class CallReceivedActivity extends EnqActivity {
     private Handler timeoutHandler = new Handler();
     private CountDownTimer countDownTimer;
     private MediaPlayer mp;
+    private Boolean isInitialized = false;
+    private Boolean responseSent = false;
     @Bind(R.id.call_received_confirm_button) Button confirmButton;
     @Bind(R.id.call_received_cancel_button) Button cancelButton;
     @Bind(R.id.call_received_extend_button) Button extendButton;
@@ -55,27 +58,46 @@ public class CallReceivedActivity extends EnqActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_call_received);
+        ButterKnife.bind(this);
+        wakeUp();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         Intent intent = new Intent(this, EnqService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        setContentView(R.layout.activity_call_received);
 
-        ButterKnife.bind(this);
+    }
 
-        wakeUp();
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mConnection);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mConnection);
+
+        if (responseSent) return;
+
+        if (enqService.clientReachedReenqueueLimit()) {
+            timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+            enqService.sendCallResponse(CANCEL);
+            // TODO  POR QUE GAROMPA FALLA ACA Y NO MANDA MENSAJE?
+        } else {
+            timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+            enqService.sendCallResponse(EXTEND);
+            enqService.startWaitingForCall();
+
+        }
     }
 
     private void wakeUp() {
-
-
 
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
@@ -129,6 +151,10 @@ public class CallReceivedActivity extends EnqActivity {
             EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
             enqService = binder.getService();
 
+            if (isInitialized) return;
+
+            isInitialized = true;
+
             paydeskNumberTextView.setText(enqService.getPaydeskNumber().toString());
             clientNumberTextView.setText(enqService.getClientNumber().toString());
             extendButton.setText("EXTENDER (" +enqService.getNextEstimatedTime()+ "')");
@@ -138,6 +164,7 @@ public class CallReceivedActivity extends EnqActivity {
                 public void onClick(View v) {
                     timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(CONFIRM);
+                    responseSent = true;
                     Intent confirmedIntent = new Intent(getApplicationContext(),ConfirmedActivity.class);
                     startActivity(confirmedIntent);
                     finish();
@@ -149,6 +176,7 @@ public class CallReceivedActivity extends EnqActivity {
                 public void onClick(View v) {
                     timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(CANCEL);
+                    responseSent = true;
                     finish();
                 }
             });
@@ -158,6 +186,7 @@ public class CallReceivedActivity extends EnqActivity {
                 public void onClick(View v) {
                     timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
                     enqService.sendCallResponse(EXTEND);
+                    responseSent = true;
                     enqService.startWaitingForCall();
                     finish();
                 }
@@ -175,7 +204,7 @@ public class CallReceivedActivity extends EnqActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-
+            enqService = null;
         }
     };
 

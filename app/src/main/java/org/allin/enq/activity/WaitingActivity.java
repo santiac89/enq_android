@@ -43,6 +43,12 @@ public class WaitingActivity extends EnqActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        enqService.cancelWaitingForCall();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         Intent intent = new Intent(this, EnqService.class);
@@ -72,7 +78,7 @@ public class WaitingActivity extends EnqActivity {
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    enqService.cancelWaiting();
+                    enqService.cancelWaitingForCall();
                     finish();
                 }
             });

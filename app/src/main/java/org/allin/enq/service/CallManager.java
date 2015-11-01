@@ -1,9 +1,9 @@
-package org.allin.enq.util;
+package org.allin.enq.service;
 
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
-import org.allin.enq.model.EnqCallInfo;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,9 +15,9 @@ import java.net.Socket;
 /**
  * Created by santiagocarullo on 10/25/15.
  */
-public class CallReceiver {
+public class CallManager {
 
-    EnqCallInfo callInfo;
+    CallData callInfo;
     ServerSocket serverSocket;
     BufferedWriter socketWriter;
     Boolean waitingForCall = false;
@@ -55,13 +55,15 @@ public class CallReceiver {
                 socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
                 while (response == null) response = socketReader.readLine();
+                socketWriter.write("call_received");
+                socketWriter.flush();
 
             } catch (IOException e) {
                 waitingForCall = false;
                 return;
             }
 
-            callInfo = gson.fromJson(response, EnqCallInfo.class);
+            callInfo = gson.fromJson(response, CallData.class);
 
             callback.call(callInfo);
 
@@ -85,6 +87,7 @@ public class CallReceiver {
             protected Void doInBackground(Void... params) {
                 try {
                     socketWriter.write(message);
+                    socketWriter.flush();
                     socketWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
