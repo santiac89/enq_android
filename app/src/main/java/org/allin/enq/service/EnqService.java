@@ -44,8 +44,8 @@ public class EnqService extends Service {
 
     private ApiClient apiClient;
     private ApiInfo apiInfo;
-    private CallData callData;
-    private ClientData clientData;
+    private CallInfo callInfo;
+    private ClientInfo clientInfo;
     private CallManager callManager = new CallManager();
 
 
@@ -134,7 +134,7 @@ public class EnqService extends Service {
             clientData.put("hmac", wifiManager.getConnectionInfo().getMacAddress());
 
             try {
-                EnqService.this.clientData = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
+                clientInfo = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
             } catch (RetrofitError e) {
                 serviceListener.OnClientNotEnqueued(e);
                 return null;
@@ -153,8 +153,8 @@ public class EnqService extends Service {
     public void startWaitingForCall() {
         callManager.setCallback(new CallReceivedCallback() {
             @Override
-            public void call(CallData info) {
-                callData = info;
+            public void call(CallInfo info) {
+                callInfo = info;
                 Intent callIntent = new Intent(getApplicationContext(), CallReceivedActivity.class);
                 callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(callIntent);
@@ -170,7 +170,7 @@ public class EnqService extends Service {
             @Override
             protected Void doInBackground(Void... params) {
             try {
-                apiClient.cancel(clientData.getClientId());
+                apiClient.cancel(clientInfo.getClientId());
                 callManager.stop();
             } catch (RetrofitError e) {
                 stopForeground(true);
@@ -198,18 +198,18 @@ public class EnqService extends Service {
 
     public Integer getCallTimeout() { return apiInfo.getCallTimeout(); }
 
-    public Integer getPaydeskNumber() { return callData.getPaydeskNumber(); }
+    public Integer getPaydeskNumber() { return callInfo.getPaydeskNumber(); }
 
-    public String getNextEstimatedTime() { return callData.getNextEstimatedTime().toString(); }
+    public String getNextEstimatedTime() { return callInfo.getNextEstimatedTime().toString(); }
 
-    public Boolean clientReachedReenqueueLimit() { return callData.getReenqueueCount() >= apiInfo.getReenqueueLimit(); }
+    public Boolean clientReachedReenqueueLimit() { return callInfo.getReenqueueCount() >= apiInfo.getReenqueueLimit(); }
 
-    public Integer getPaydeskArrivalTimeout() { return clientData.getPaydeskArrivalTimeout(); }
+    public Integer getPaydeskArrivalTimeout() { return clientInfo.getPaydeskArrivalTimeout(); }
 
-    public Integer getClientNumber() { return clientData.getClientNumber(); }
+    public Integer getClientNumber() { return clientInfo.getClientNumber(); }
 
     public String getGroupName() {
-        return clientData.getGroupName();
+        return clientInfo.getGroupName();
     }
 
     @Override

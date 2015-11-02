@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by santiagocarullo on 9/17/15.
  */
-public class CallData implements Serializable {
+public class CallInfo implements Serializable {
 
     private Integer paydesk_number;
     private Integer reenqueue_count;

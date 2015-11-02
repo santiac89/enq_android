@@ -17,7 +17,7 @@ import java.net.Socket;
  */
 public class CallManager {
 
-    CallData callInfo;
+    CallInfo callInfo;
     ServerSocket serverSocket;
     BufferedWriter socketWriter;
     Boolean waitingForCall = false;
@@ -63,7 +63,7 @@ public class CallManager {
                 return;
             }
 
-            callInfo = gson.fromJson(response, CallData.class);
+            callInfo = gson.fromJson(response, CallInfo.class);
 
             callback.call(callInfo);
 

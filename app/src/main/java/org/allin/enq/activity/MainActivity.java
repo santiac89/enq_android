@@ -101,6 +101,7 @@ public class MainActivity extends EnqActivity {
 
     }
 
+
     /**
      * Connection with the background EnqService
      */
@@ -211,7 +212,7 @@ public class MainActivity extends EnqActivity {
         @Override
         public void OnClientEnqueued() {
             enqService.startWaitingForCall();
-            Intent intent = new Intent(getApplicationContext(), WaitingActivity.class);
+            Intent intent = new Intent(MainActivity.this, WaitingActivity.class);
             startActivity(intent);
         }
 

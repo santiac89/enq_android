@@ -3,7 +3,7 @@ package org.allin.enq.service;
 /**
  * Created by santiagocarullo on 9/17/15.
  */
-public class ClientData {
+public class ClientInfo {
 
     private String client_id;
     private Integer client_number;
