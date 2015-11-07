@@ -32,13 +32,14 @@ public class CallReceivedActivity extends EnqActivity {
     public static final String CANCEL = "cancel";
 
     private EnqService enqService = null;
+    private Boolean timeoutFired = false;
 
     private Runnable timeoutCallbackRunnable = new Runnable() {
         @Override
         public void run() {
             if (!enqService.clientReachedReenqueueLimit())
                 enqService.startWaitingForCall();
-
+            timeoutFired = true;
             finish();
         }
     };
@@ -83,7 +84,7 @@ public class CallReceivedActivity extends EnqActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (responseSent) return;
+        if (responseSent || timeoutFired) return;
 
         if (enqService.clientReachedReenqueueLimit()) {
             timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
