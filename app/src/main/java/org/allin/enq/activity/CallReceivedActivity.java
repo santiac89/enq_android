@@ -113,7 +113,6 @@ public class CallReceivedActivity extends EnqActivity {
         long[] pattern = {0, 500, 500, 500, 500, 500, 500, 500};
         vibrator.vibrate(pattern, -1);
 
-        mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
         mp.setLooping(false);
         mp.start();
         mp.setOnCompletionListener(new SoundtrackPlayerListener());
