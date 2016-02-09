@@ -15,22 +15,23 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="53dp"
         android:orientation="vertical"
-        android:paddingBottom="16dp">
+        android:paddingBottom="8dp">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/logo_verde"
-            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingTop="@dimen/activity_vertical_margin_ldpi"
             android:src="@drawable/icon_bw"/>
 
         <TextView android:id="@+id/toolbar_title_text_view"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/title_activity_main"
-            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/logo_verde"
             android:layout_marginLeft="1dp" />

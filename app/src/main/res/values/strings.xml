@@ -3,8 +3,8 @@
     <string name="title_activity_main">EnQ</string>
     <string name="title_activity_waiting">WaitingActivity</string>
     <string name="wifioff_dialog_title">Wi-Fi Desactivado</string>
-    <string name="wifioff_dialog_content">Su conexion Wi-Fi se encuentra desactivada. Por favor, activela y conectese a la red del local.</string>
-    <string name="wifioff_dialog_settings">Configuracion</string>
+    <string name="wifioff_dialog_content">Su conexión Wi-Fi se encuentra desactivada. Por favor, actívela y conectese a la red del supermercado.</string>
+    <string name="wifioff_dialog_settings">Configuración</string>
     <string name="wifioff_dialog_cancel">Cancelar</string>
     <string name="no_group_found">No se ha encontrado ningún grupo :(</string>
     <string name="connecting">Conectando...</string>
@@ -15,4 +15,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_confirmed">ConfirmedActivity</string>
+
+    <string name="caja_nro">Caja N°</string>
+    <string name="cliente_nro">Número de cliente</string>
+    <string name="tiempo_acercarse_a_caja">Tiempo para acercarse a la caja:</string>
+
+    <string name="button_confirmar">CONFIRMAR</string>
+    <string name="button_extender">EXTENDER</string>
+    <string name="button_cancelar">CANCELAR</string>
+    <string name="button_cerrar">CERRAR</string>
+
 </resources>
