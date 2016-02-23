@@ -16,10 +16,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/tipo_atencion"
         android:id="@+id/group_name_label"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:layout_below="@+id/waiting_activity_toolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="74dp" />
+        android:layout_marginTop="40dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,17 +28,17 @@
         android:text="Large Text"
         android:textColor="@color/quiet_green"
         android:id="@+id/group_name_text_view"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:layout_below="@+id/group_name_label"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="7.5dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/cliente_nro"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:id="@+id/waiting_client_number_label"
         android:layout_above="@+id/waiting_client_number_text_view"
         android:layout_centerHorizontal="true" />
@@ -49,11 +49,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:id="@+id/waiting_client_number_text_view"
-        android:textSize="70dp"
+        android:textSize="56dp"
         android:textColor="@color/quiet_green"
         android:layout_above="@+id/waiting_cancel_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="56dp" />
+        android:layout_marginBottom="34dp" />
 
     <Button
         android:layout_width="wrap_content"

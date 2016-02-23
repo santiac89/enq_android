@@ -19,6 +19,7 @@
     <string name="caja_nro">Caja N°</string>
     <string name="cliente_nro">Número de cliente</string>
     <string name="tiempo_acercarse_a_caja">Tiempo para acercarse a la caja:</string>
+    <string name="tipo_atencion">Tipo de atención</string>
 
     <string name="button_confirmar">CONFIRMAR</string>
     <string name="button_extender">EXTENDER</string>

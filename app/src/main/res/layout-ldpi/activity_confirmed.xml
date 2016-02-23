@@ -74,6 +74,7 @@
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"
         android:textIsSelectable="false" />
 
     <TextView
