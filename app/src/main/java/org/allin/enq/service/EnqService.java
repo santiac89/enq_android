@@ -173,11 +173,11 @@ public class EnqService extends Service {
                 apiClient.cancel(clientInfo.getClientId());
                 callManager.stop();
             } catch (RetrofitError e) {
-                stopForeground(true);
                 e.printStackTrace();
+            } finally {
+                stopForeground(true);
             }
 
-            stopForeground(true);
             return null;
             }
         }.execute();

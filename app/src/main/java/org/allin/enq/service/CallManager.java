@@ -74,7 +74,9 @@ public class CallManager {
     public void stop() {
         try {
             serverSocket.close();
-            socketWriter.close();
+            if (socketWriter != null) {
+                socketWriter.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
