@@ -94,6 +94,9 @@ public class EnqService extends Service {
             } catch (IOException e) {
                 serviceListener.OnServerNotFound(e);
                 return null;
+            } catch (NullPointerException e) {
+                serviceListener.OnServerNotFound(e);
+                return null;
             }
 
             String response;

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -39,6 +41,7 @@ public class MainActivity extends EnqActivity {
 
     EnqService enqService = null;
     WifiManager wifiManager = null;
+    ConnectivityManager connManager = null;
     Integer serverNotFoundRetries = 0;
     Integer groupsNotFoundRetries = 0;
 
@@ -55,6 +58,8 @@ public class MainActivity extends EnqActivity {
         setupActivity(R.id.main_activity_toolbar, "Tipo de atención");
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
     }
 
     @Override
@@ -71,9 +76,17 @@ public class MainActivity extends EnqActivity {
         groupsListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                noGroupsFoundTextView.setVisibility(View.INVISIBLE);
-                groupListView.setAdapter(new EmptyListAdapter());
-                enqService.findService();
+
+                NetworkInfo wifiState = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+                if (!wifiManager.isWifiEnabled() || !wifiState.isConnected()) {
+                    groupsListSwipeRefreshLayout.setRefreshing(false);
+                    promptForWifiNetwork();
+                } else {
+                    noGroupsFoundTextView.setVisibility(View.INVISIBLE);
+                    groupListView.setAdapter(new EmptyListAdapter());
+                    enqService.findService();
+                }
             }
         });
 
@@ -114,12 +127,14 @@ public class MainActivity extends EnqActivity {
             enqService = binder.getService();
             enqService.setListener(new MyServiceListener());
 
+            NetworkInfo wifiState = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
             if (enqService.isWaitingForServerCall()) {
                 Intent intent = new Intent(getApplicationContext(),WaitingActivity.class);
                 startActivity(intent);
             }
 
-            if (!wifiManager.isWifiEnabled()) {
+            if (!wifiManager.isWifiEnabled() || !wifiState.isConnected()) {
 
                 promptForWifiNetwork();
 
@@ -157,7 +172,7 @@ public class MainActivity extends EnqActivity {
             .setNegativeButton(R.string.wifioff_dialog_cancel,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        MainActivity.this.finish();
+                        dialog.cancel();
                     }
                 }
             );

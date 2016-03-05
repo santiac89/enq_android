@@ -3,7 +3,7 @@
     <string name="title_activity_main">EnQ</string>
     <string name="title_activity_waiting">WaitingActivity</string>
     <string name="wifioff_dialog_title">Wi-Fi Desactivado</string>
-    <string name="wifioff_dialog_content">Su conexion Wi-Fi se encuentra desactivada. Por favor, activela y conectese a la red del local.</string>
+    <string name="wifioff_dialog_content">Su conexion Wi-Fi se encuentra desactivada o no se encuentra conectado a ninguna red. Por favor, activela y conectese a la red del local.</string>
     <string name="wifioff_dialog_settings">Configuracion</string>
     <string name="wifioff_dialog_cancel">Cancelar</string>
     <string name="no_group_found">No se ha encontrado ningún grupo :(</string>
