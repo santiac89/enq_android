@@ -1,9 +1,5 @@
 package org.allin.enq.api;
 
-import org.apache.http.util.ByteArrayBuffer;
-
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Santi on 21/07/2015.

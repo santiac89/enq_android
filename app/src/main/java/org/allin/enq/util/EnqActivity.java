@@ -4,6 +4,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ import butterknife.ButterKnife;
 /**
  * Created by santiagocarullo on 9/13/15.
  */
-public class EnqActivity extends ActionBarActivity {
+public class EnqActivity extends AppCompatActivity {
 
     @Nullable
     @Bind(R.id.toolbar_title_text_view) TextView toolbarTitleTextView;
@@ -39,10 +40,9 @@ public class EnqActivity extends ActionBarActivity {
         comfortaa_bold = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Bold.ttf");
     }
 
-    public void setupActivity(int toolbarId, String toolbarTitle) {
+    public void setupActivity() {
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         setTypefaceForGroup(root);
-        setupActionBar(toolbarId, toolbarTitle);
     }
 
     public void setupTexts() {
@@ -67,14 +67,14 @@ public class EnqActivity extends ActionBarActivity {
         }
     }
 
-    private void setupActionBar(Integer toolbarId, String title) {
-        Toolbar toolbar = (Toolbar) findViewById(toolbarId);
-        ButterKnife.bind(toolbar);
-        toolbarTitleTextView.setTypeface(getBold());
-        toolbarTitleTextView.setText(title);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(null);
-    }
+//    private void setupActionBar(Integer toolbarId, String title) {
+//        Toolbar toolbar = (Toolbar) findViewById(toolbarId);
+//        ButterKnife.bind(toolbar);
+//        toolbarTitleTextView.setTypeface(getBold());
+//        toolbarTitleTextView.setText(title);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setTitle(null);
+//    }
 
     public Typeface getBold() {
         return comfortaa_bold;

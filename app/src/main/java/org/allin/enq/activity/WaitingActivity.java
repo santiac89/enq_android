@@ -31,7 +31,7 @@ public class WaitingActivity extends EnqActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting);
         ButterKnife.bind(this);
-        setupActivity(R.id.waiting_activity_toolbar, "Llamada en espera");
+        setupActivity();
 
     }
 

@@ -26,8 +26,12 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -61,8 +65,9 @@ public class EnqService extends Service {
                 List<Group> groups = null;
 
                 try {
-                    groups = apiClient.getGroups();
-                } catch (RetrofitError e) {
+                    Call<List<Group>> groupsCall = apiClient.getGroups();
+                    groups = groupsCall.execute().body();
+                } catch (IOException e) {
                     serviceListener.OnGroupsNotFound();
                     return null;
                 }
@@ -109,9 +114,15 @@ public class EnqService extends Service {
 
             apiInfo = gson.fromJson(response, ApiInfo.class);
 
-            apiClient = new RestAdapter.Builder()
-                    .setEndpoint("http://" + apiInfo.getAddress() + ":" + apiInfo.getPort().toString())
-                    .build().create(ApiClient.class);
+            OkHttpClient client = new OkHttpClient.Builder().build();
+
+            apiClient = new Retrofit.Builder()
+                    .baseUrl("http://" + apiInfo.getAddress() + ":" + apiInfo.getPort().toString())
+                    .client(client)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(ApiClient.class);
 
             serviceListener.OnServerFound();
             return null;
@@ -136,9 +147,11 @@ public class EnqService extends Service {
 
             clientData.put("hmac", wifiManager.getConnectionInfo().getMacAddress());
 
+            Call<ClientInfo> clientInfoCall = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
+
             try {
-                clientInfo = apiClient.enqueueIn(selectedGroup.get_id(), clientData);
-            } catch (RetrofitError e) {
+                clientInfo = clientInfoCall.execute().body();
+            } catch (IOException e) {
                 serviceListener.OnClientNotEnqueued(e);
                 return null;
             }
@@ -173,9 +186,9 @@ public class EnqService extends Service {
             @Override
             protected Void doInBackground(Void... params) {
             try {
-                apiClient.cancel(clientInfo.getClientId());
+                apiClient.cancel(clientInfo.getClientId()).execute();
                 callManager.stop();
-            } catch (RetrofitError e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 stopForeground(true);

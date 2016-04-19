@@ -71,10 +71,9 @@
         android:id="@+id/remaining_time_text_view"
         android:textSize="45sp"
         android:textColor="@color/quiet_green"
-        android:layout_above="@+id/confirmed_close_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:textIsSelectable="false" />
+        android:textIsSelectable="false"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"

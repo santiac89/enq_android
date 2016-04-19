@@ -25,10 +25,11 @@ import org.allin.enq.service.EnqServiceListener;
 import org.allin.enq.util.EmptyListAdapter;
 import org.allin.enq.util.EnqActivity;
 import org.allin.enq.util.GroupListAdapter;
+
+import java.io.IOException;
 import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.RetrofitError;
 
 public class MainActivity extends EnqActivity {
 
@@ -55,7 +56,7 @@ public class MainActivity extends EnqActivity {
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setupActivity(R.id.main_activity_toolbar, "Tipo de atención");
+        setupActivity();
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -232,7 +233,7 @@ public class MainActivity extends EnqActivity {
         }
 
         @Override
-        public void OnClientNotEnqueued(RetrofitError e) {
+        public void OnClientNotEnqueued(IOException e) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

@@ -2,9 +2,10 @@ package org.allin.enq.service;
 
 import org.allin.enq.model.Group;
 
+import java.io.IOException;
 import java.util.List;
 
-import retrofit.RetrofitError;
+
 
 
 /**
@@ -32,7 +33,7 @@ public interface EnqServiceListener {
 
     /**
      * Called when no groups could be retrieved from the server
-     * @param e RetrofitError about why the groups couldn't be retrieved
+     * @param IOException about why the groups couldn't be retrieved
      */
     void OnGroupsNotFound();
 
@@ -47,6 +48,6 @@ public interface EnqServiceListener {
      * Called when the client couldn't be enqueued in a group
      * @param e Exception about why it couldn't
      */
-    void OnClientNotEnqueued(RetrofitError e);
+    void OnClientNotEnqueued(IOException e);
 
 }
