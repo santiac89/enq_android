@@ -1,7 +1,12 @@
 package org.allin.enq.util;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.allin.enq.R;
+import org.allin.enq.service.EnqService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,11 +27,10 @@ import butterknife.ButterKnife;
  */
 public class EnqActivity extends AppCompatActivity {
 
-    @Nullable
-    @Bind(R.id.toolbar_title_text_view) TextView toolbarTitleTextView;
-
     Typeface comfortaa_regular = null;
     Typeface comfortaa_bold = null;
+
+    protected EnqService enqService;
 
     @Override
     public void setContentView(int layoutResID) {
@@ -67,21 +72,33 @@ public class EnqActivity extends AppCompatActivity {
         }
     }
 
-//    private void setupActionBar(Integer toolbarId, String title) {
-//        Toolbar toolbar = (Toolbar) findViewById(toolbarId);
-//        ButterKnife.bind(toolbar);
-//        toolbarTitleTextView.setTypeface(getBold());
-//        toolbarTitleTextView.setText(title);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle(null);
-//    }
-
-    public Typeface getBold() {
-        return comfortaa_bold;
-    }
-
     public Typeface getRegular() {
         return comfortaa_regular;
     }
+
+    /**
+     * Connection with the background EnqService
+     */
+    protected ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
+            enqService = binder.getService();
+            enqService.startInForeground();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
+
+    protected void bindEnqService(ServiceConnection connection) {
+        Intent intent = new Intent(this, EnqService.class);
+        startService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
 
 }

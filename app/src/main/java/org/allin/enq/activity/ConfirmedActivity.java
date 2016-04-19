@@ -37,8 +37,7 @@ public class ConfirmedActivity extends EnqActivity {
         setContentView(R.layout.activity_confirmed);
         ButterKnife.bind(this);
         setupActivity();
-        Intent intent = new Intent(this, EnqService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindEnqService(mConnection);
     }
 
     @Override

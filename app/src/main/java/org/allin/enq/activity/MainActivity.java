@@ -50,9 +50,7 @@ public class MainActivity extends EnqActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, EnqService.class);
-        startService(intent);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindEnqService(mConnection);
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);

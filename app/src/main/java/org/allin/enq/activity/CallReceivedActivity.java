@@ -67,11 +67,7 @@ public class CallReceivedActivity extends EnqActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        Intent intent = new Intent(this, EnqService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-
+        bindEnqService(mConnection);
     }
 
     @Override
