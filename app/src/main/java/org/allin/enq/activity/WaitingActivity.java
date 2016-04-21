@@ -42,7 +42,7 @@ public class WaitingActivity extends EnqActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        enqService.cancelWaitingForCall();
+        enqService.cancelWaitingForCall();
     }
 
     @Override

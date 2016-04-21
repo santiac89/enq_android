@@ -4,7 +4,6 @@
     tools:context="org.allin.enq.activity.ConfirmedActivity"
     android:padding="0dp">
 
-    <include layout="@layout/toolbar" android:id="@+id/confirmed_activity_toolbar" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -14,9 +13,8 @@
         android:id="@+id/confirmed_paydesk_number_label"
         android:textSize="25sp"
         android:layout_marginTop="25dp"
-        android:layout_below="@+id/confirmed_activity_toolbar"
-        android:layout_alignLeft="@+id/confirmed_close_button"
-        android:layout_alignStart="@+id/confirmed_close_button" />
+        android:layout_alignLeft="@id/confirmed_close_button"
+        android:layout_alignStart="@id/confirmed_close_button" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,14 +22,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:id="@+id/confirmed_paydesk_number_text_view"
-        android:textColor="@color/quiet_green"
+        android:textColor="@color/primary_blue"
         android:textSize="40sp"
         android:layout_marginRight="26dp"
         android:layout_marginEnd="26dp"
-        android:layout_alignBaseline="@+id/confirmed_paydesk_number_label"
-        android:layout_alignBottom="@+id/confirmed_paydesk_number_label"
-        android:layout_alignRight="@+id/confirmed_close_button"
-        android:layout_alignEnd="@+id/confirmed_close_button" />
+        android:layout_alignBaseline="@id/confirmed_paydesk_number_label"
+        android:layout_alignBottom="@id/confirmed_paydesk_number_label"
+        android:layout_alignRight="@id/confirmed_close_button"
+        android:layout_alignEnd="@id/confirmed_close_button" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -40,10 +38,10 @@
         android:text="Número de cliente"
         android:textSize="25sp"
         android:id="@+id/confirmed_client_number_label"
-        android:layout_alignBaseline="@+id/confirmed_client_number_text_view"
-        android:layout_alignBottom="@+id/confirmed_client_number_text_view"
-        android:layout_alignLeft="@+id/confirmed_paydesk_number_label"
-        android:layout_alignStart="@+id/confirmed_paydesk_number_label" />
+        android:layout_alignBaseline="@id/confirmed_client_number_text_view"
+        android:layout_alignBottom="@id/confirmed_client_number_text_view"
+        android:layout_alignLeft="@id/confirmed_paydesk_number_label"
+        android:layout_alignStart="@id/confirmed_paydesk_number_label" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -51,24 +49,20 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:textSize="40sp"
-        android:textColor="@color/quiet_green"
+        android:textColor="@color/primary_blue"
         android:id="@+id/confirmed_client_number_text_view"
-        android:layout_below="@+id/confirmed_paydesk_number_label"
-        android:layout_alignLeft="@+id/confirmed_paydesk_number_text_view"
-        android:layout_alignStart="@+id/confirmed_paydesk_number_text_view" />
+        android:layout_below="@id/confirmed_paydesk_number_label"
+        android:layout_alignLeft="@id/confirmed_paydesk_number_text_view"
+        android:layout_alignStart="@id/confirmed_paydesk_number_text_view" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CERRAR"
         android:id="@+id/confirmed_close_button"
-        android:background="@drawable/green_button_shape"
-        android:textColor="@color/white"
+        android:background="@drawable/button_shape"
+        android:textColor="@android:color/white"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/confirmed_activity_toolbar"
-        android:layout_alignStart="@+id/confirmed_activity_toolbar"
-        android:layout_alignRight="@+id/confirmed_activity_toolbar"
-        android:layout_alignEnd="@+id/confirmed_activity_toolbar"
         android:layout_margin="10dp"
         android:visibility="invisible" />
 
@@ -79,8 +73,8 @@
         android:text="00:00"
         android:id="@+id/remaining_time_text_view"
         android:textSize="55sp"
-        android:textColor="@color/quiet_green"
-        android:layout_above="@+id/confirmed_close_button"
+        android:textColor="@color/primary_blue"
+        android:layout_above="@id/confirmed_close_button"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:textIsSelectable="false" />

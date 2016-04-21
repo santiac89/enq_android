@@ -33,12 +33,6 @@ public class EnqActivity extends AppCompatActivity {
     protected EnqService enqService;
 
     @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
-        setupTexts();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         comfortaa_regular = Typeface.createFromAsset(getAssets(), "fonts/Comfortaa-Regular.ttf");
@@ -75,23 +69,6 @@ public class EnqActivity extends AppCompatActivity {
     public Typeface getRegular() {
         return comfortaa_regular;
     }
-
-    /**
-     * Connection with the background EnqService
-     */
-    protected ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            EnqService.EnqServiceBinder binder = (EnqService.EnqServiceBinder) service;
-            enqService = binder.getService();
-            enqService.startInForeground();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
 
     protected void bindEnqService(ServiceConnection connection) {

@@ -4,8 +4,6 @@
     tools:context="org.allin.enq.activity.ConfirmedActivity"
     android:padding="0dp">
 
-    <include layout="@layout/toolbar" android:id="@+id/confirmed_activity_toolbar" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +12,6 @@
         android:id="@+id/confirmed_paydesk_number_label"
         android:textSize="20dp"
         android:layout_marginTop="38dp"
-        android:layout_below="@+id/confirmed_activity_toolbar"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -23,10 +20,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:id="@+id/confirmed_paydesk_number_text_view"
-        android:textColor="@color/quiet_green"
+        android:textColor="@color/primary_blue"
         android:textSize="60sp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/confirmed_paydesk_number_label" />
+        android:layout_below="@id/confirmed_paydesk_number_label" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -36,7 +33,7 @@
         android:textSize="20dp"
         android:id="@+id/confirmed_client_number_label"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/confirmed_paydesk_number_text_view" />
+        android:layout_below="@id/confirmed_paydesk_number_text_view" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,25 +41,25 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0"
         android:textSize="60sp"
-        android:textColor="@color/quiet_green"
+        android:textColor="@color/primary_blue"
         android:id="@+id/confirmed_client_number_text_view"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/confirmed_client_number_label" />
+        android:layout_below="@id/confirmed_client_number_label" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CERRAR"
         android:id="@+id/confirmed_close_button"
-        android:background="@drawable/green_button_shape"
-        android:textColor="@color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/confirmed_activity_toolbar"
-        android:layout_alignStart="@+id/confirmed_activity_toolbar"
-        android:layout_alignRight="@+id/confirmed_activity_toolbar"
-        android:layout_alignEnd="@+id/confirmed_activity_toolbar"
-        android:layout_margin="10dp"
-        android:visibility="invisible" />
+        android:background="@drawable/button_shape"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -70,9 +67,9 @@
         android:text="00:00"
         android:id="@+id/remaining_time_text_view"
         android:textSize="45sp"
-        android:textColor="@color/quiet_green"
+        android:textColor="@color/primary_blue"
         android:textIsSelectable="false"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@id/remaining_time_label"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -80,8 +77,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Acerquese a caja antes de"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/confirmed_client_number_text_view"
+        android:id="@+id/remaining_time_label"
+        android:layout_below="@id/confirmed_client_number_text_view"
         android:layout_centerHorizontal="true"
         android:textSize="20dp" />
 

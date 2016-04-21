@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary">#007cdc</color>
-    <color name="primaryDark">#007cdc</color>
-    <color name="textColorPrimary">#808080</color>
-    <color name="white">#FFFFFF</color>
-    <item name="quiet_green" type="color">#007cdc</item>
-    <item name="quiet_gray" type="color">#808080</item>
+    <color name="blue">#007cdc</color>
+    <color name="primary_blue">#007cdc</color>
+    <color name="primary_dark_blue">#0066b6</color>
+    <color name="light_blue">#1384dc</color>
+    <color name="primary_background_blue">#e7f4ff</color>
+    <color name="primary_text">#ffffff</color>
+    <!--<color name="primaryDark">#007cdc</color>-->
+    <!--<color name="textColorPrimary">#808080</color>-->
+    <!--<color name="white">#ffffff</color>-->
+    <!--<color name="black">#ffffff</color>-->
+    <!--<item name="quiet_green" type="color">#007cdc</item>-->
+    <!--<item name="quiet_gray" type="color">#808080</item>-->
     <!--<color name="white">#FFFFFF</color>-->
     <!--<color name="primary">#38A23D</color>-->
     <!--<color name="primaryDark">#008738</color>-->

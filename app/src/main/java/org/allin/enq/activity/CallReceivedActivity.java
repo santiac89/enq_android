@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,13 +18,19 @@ import android.widget.TextView;
 import org.allin.enq.R;
 import org.allin.enq.service.EnqService;
 import org.allin.enq.util.EnqActivity;
-
-import java.io.IOException;
+import org.allin.enq.util.LoopTrackOnCompletionListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CallReceivedActivity extends EnqActivity {
+
+    @Bind(R.id.call_received_confirm_button) Button confirmButton;
+    @Bind(R.id.call_received_cancel_button) Button cancelButton;
+    @Bind(R.id.call_received_extend_button) Button extendButton;
+    @Bind(R.id.call_received_paydesk_number_text_view) TextView paydeskNumberTextView;
+    @Bind(R.id.call_received_client_number_text_view) TextView clientNumberTextView;
+    @Bind(R.id.remaining_to_response_text_view) TextView remainingTimeToResponseTextView;
 
     public static final String CONFIRM = "confirm";
     public static final String EXTEND = "extend";
@@ -34,27 +39,22 @@ public class CallReceivedActivity extends EnqActivity {
     private EnqService enqService = null;
     private Boolean timeoutFired = false;
 
-    private Runnable timeoutCallbackRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!enqService.clientReachedReenqueueLimit())
-                enqService.startWaitingForCall();
-            timeoutFired = true;
-            finish();
-        }
-    };
+//    private Runnable timeoutCallbackRunnable = new Runnable() {
+//        @Override
+//        public void run() {
+//        if (!enqService.clientReachedReenqueueLimit())
+//            enqService.startWaitingForCall();
+//        timeoutFired = true;
+//        finish();
+//        }
+//    };
 
-    private Handler timeoutHandler = new Handler();
+//    private Handler timeoutHandler = new Handler();
     private CountDownTimer countDownTimer;
     private MediaPlayer mp;
     private Boolean isInitialized = false;
     private Boolean responseSent = false;
-    @Bind(R.id.call_received_confirm_button) Button confirmButton;
-    @Bind(R.id.call_received_cancel_button) Button cancelButton;
-    @Bind(R.id.call_received_extend_button) Button extendButton;
-    @Bind(R.id.call_received_paydesk_number_text_view) TextView paydeskNumberTextView;
-    @Bind(R.id.call_received_client_number_text_view) TextView clientNumberTextView;
-    @Bind(R.id.remaining_to_response_text_view) TextView remainingTimeToResponseTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,15 +82,15 @@ public class CallReceivedActivity extends EnqActivity {
 
         if (responseSent || timeoutFired) return;
 
+//        timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+        countDownTimer.cancel();
+
         if (enqService.clientReachedReenqueueLimit()) {
-            timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
             enqService.sendCallResponse(CANCEL);
-            // TODO  POR QUE GAROMPA FALLA ACA Y NO MANDA MENSAJE?
+            // TODO Atento aca si falla y no envia el mensaje
         } else {
-            timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
             enqService.sendCallResponse(EXTEND);
             enqService.startWaitingForCall();
-
         }
     }
 
@@ -112,7 +112,7 @@ public class CallReceivedActivity extends EnqActivity {
         mp = MediaPlayer.create(getApplicationContext(), R.raw.bell);
         mp.setLooping(false);
         mp.start();
-        mp.setOnCompletionListener(new SoundtrackPlayerListener());
+        mp.setOnCompletionListener(new LoopTrackOnCompletionListener());
     }
 
     @Override
@@ -130,13 +130,15 @@ public class CallReceivedActivity extends EnqActivity {
             }
 
             public void onFinish() {
+                if (!enqService.clientReachedReenqueueLimit())
+                    enqService.startWaitingForCall();
+                timeoutFired = true;
+                finish();
             }
 
         };
 
-
         countDownTimer.start();
-
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -159,33 +161,36 @@ public class CallReceivedActivity extends EnqActivity {
             confirmButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
-                    enqService.sendCallResponse(CONFIRM);
-                    responseSent = true;
-                    Intent confirmedIntent = new Intent(getApplicationContext(),ConfirmedActivity.class);
-                    startActivity(confirmedIntent);
-                    finish();
+                countDownTimer.cancel();
+//                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+                enqService.sendCallResponse(CONFIRM);
+                responseSent = true;
+                Intent confirmedIntent = new Intent(getApplicationContext(),ConfirmedActivity.class);
+                startActivity(confirmedIntent);
+                finish();
                 }
             });
 
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
-                    enqService.sendCallResponse(CANCEL);
-                    responseSent = true;
-                    finish();
+                countDownTimer.cancel();
+//                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+                enqService.sendCallResponse(CANCEL);
+                responseSent = true;
+                finish();
                 }
             });
 
             extendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
-                    enqService.sendCallResponse(EXTEND);
-                    responseSent = true;
-                    enqService.startWaitingForCall();
-                    finish();
+                countDownTimer.cancel();
+//                    timeoutHandler.removeCallbacks(timeoutCallbackRunnable);
+                enqService.sendCallResponse(EXTEND);
+                responseSent = true;
+                enqService.startWaitingForCall();
+                finish();
                 }
             });
 
@@ -193,10 +198,8 @@ public class CallReceivedActivity extends EnqActivity {
                 extendButton.setVisibility(View.GONE);
             }
 
-            timeoutHandler.postDelayed(timeoutCallbackRunnable, enqService.getCallTimeout());
+//            timeoutHandler.postDelayed(timeoutCallbackRunnable, enqService.getCallTimeout());
             startCountdown();
-
-
         }
 
         @Override
@@ -204,28 +207,4 @@ public class CallReceivedActivity extends EnqActivity {
             enqService = null;
         }
     };
-
-    private class SoundtrackPlayerListener implements MediaPlayer.OnCompletionListener{
-
-        int loopTimes = 0;
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-
-            if (loopTimes < 2) {
-                loopTimes++;
-                mp.seekTo(0);
-                mp.start();
-                return;
-            }
-
-            mp.reset();
-            mp.release();
-            mp = null;
-        }
-    }
-
-
-
-
 }

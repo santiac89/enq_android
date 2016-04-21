@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/no_group_found"
-        android:textColor="@color/quiet_gray"
+        android:textColor="@android:color/darker_gray"
         android:id="@+id/no_groups_found_text_view"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

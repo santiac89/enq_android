@@ -78,7 +78,6 @@ public class ConfirmedActivity extends EnqActivity {
 
         };
 
-
         countDownTimer.start();
 
     }

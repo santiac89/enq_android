@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">EnQ</string>
     <string name="title_activity_main">EnQ</string>
-    <string name="title_activity_waiting">WaitingActivity</string>
+    <string name="title_activity_waiting">EnQ</string>
+    <string name="title_activity_call_received">EnQ</string>
+    <string name="title_activity_confirmed">EnQ</string>
     <string name="wifioff_dialog_title">Wi-Fi Desactivado</string>
     <string name="wifioff_dialog_content">Su conexion Wi-Fi se encuentra desactivada o no se encuentra conectado a ninguna red. Por favor, activela y conectese a la red del local.</string>
     <string name="wifioff_dialog_settings">Configuracion</string>
@@ -10,22 +12,6 @@
     <string name="connecting">Conectando...</string>
     <string name="refresh">Actualizar</string>
     <string name="selecc_tipo_atencion">Seleccione el tipo de atención</string>
-    <string name="title_activity_call_received">CallReceivedActivity</string>
     <string name="couldnt_assign_group">Lo sentimos, no se pudo asignar al grupo. Intentelo de nuevo"</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_confirmed">ConfirmedActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
-
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
-    <string name="title_activity_drawer">DrawerActivity</string>
-    <string name="drawer_open" />
-    <string name="drawer_close">ihj</string>
 </resources>

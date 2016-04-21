@@ -1,24 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-   <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
+    <style name="MyTheme" parent="@style/Theme.AppCompat.Light" >
+        <item name="statusBarColor">@color/primary_dark_blue</item>
+        <item name="navigationBarColor">@color/primary_dark_blue</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
 
-    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="MyTheme.MyButton">
+        <item name="android:background">@drawable/button_shape</item>
     </style>
 
-    <!--<style name="AppNameToolbar" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">-->
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="titleTextStyle">@style/MyActionBar.Title</item>
+        <item name="android:background">@color/primary_blue</item>
+    </style>
 
-    <!--</style>-->
-
-
+    <style name="MyActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

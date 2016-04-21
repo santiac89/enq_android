@@ -12,8 +12,7 @@
 
     <application
         android:icon="@drawable/icon"
-        android:label="EnQ"
-        android:theme="@style/AppTheme">
+        android:label="EnQ">
         
         <activity
             android:name=".activity.MainActivity"
@@ -36,8 +35,8 @@
             android:name=".activity.CallReceivedActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:showOnLockScreen="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+            android:showOnLockScreen="true" />
+
         <activity
             android:name=".activity.ConfirmedActivity"
             android:configChanges="orientation|keyboardHidden"
